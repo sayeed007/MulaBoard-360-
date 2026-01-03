@@ -3,24 +3,200 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Mula Rating Colors */
+  --golden-mula: #FFD700;
+  --golden-mula-bg: #FEF9C3;
+  --fresh-carrot: #FF6B35;
+  --fresh-carrot-bg: #FED7AA;
+  --rotten-tomato: #DC2626;
+  --rotten-tomato-bg: #FECACA;
+
+  /* Semantic Colors */
+  --primary: #10b981; /* Green for Mula theme */
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #1f2937;
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+  --accent: #fbbf24;
+  --accent-foreground: #78350f;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Border & Input */
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #10b981;
+
+  /* Card */
+  --card: #ffffff;
+  --card-foreground: #171717;
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+
+  /* Radius */
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Mula Rating Colors */
+  --color-golden-mula: var(--golden-mula);
+  --color-golden-mula-bg: var(--golden-mula-bg);
+  --color-fresh-carrot: var(--fresh-carrot);
+  --color-fresh-carrot-bg: var(--fresh-carrot-bg);
+  --color-rotten-tomato: var(--rotten-tomato);
+  --color-rotten-tomato-bg: var(--rotten-tomato-bg);
+
+  /* Semantic Colors */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Border Radius */
+  --default-radius: var(--radius);
+
+  /* Custom Animations */
+  --animate-sparkle: sparkle 1.5s ease-in-out infinite;
+  --animate-bounce-gentle: bounce-gentle 2s ease-in-out infinite;
+  --animate-shake: shake 0.5s ease-in-out;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card: #1f1f1f;
+    --card-foreground: #ededed;
+    --popover: #1f1f1f;
+    --popover-foreground: #ededed;
+    --primary: #10b981;
+    --primary-foreground: #ffffff;
+    --secondary: #262626;
+    --secondary-foreground: #ededed;
+    --muted: #171717;
+    --muted-foreground: #a3a3a3;
+    --accent: #fbbf24;
+    --accent-foreground: #fef3c7;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --border: #262626;
+    --input: #262626;
+    --ring: #10b981;
   }
 }
 
+/* Custom Keyframe Animations */
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Base Styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Utility Classes */
+.sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
 }

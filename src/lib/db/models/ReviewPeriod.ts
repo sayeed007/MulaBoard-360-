@@ -1,0 +1,208 @@
+import mongoose, { Schema, Model, Document } from 'mongoose';
+
+/**
+ * Review Period Interface
+ * Represents a time-bound review cycle (e.g., Annual Review 2025)
+ */
+export interface IReviewPeriod extends Document {
+  // Period Details
+  name: string;
+  slug: string;
+
+  // Date Range
+  startDate: Date;
+  endDate: Date;
+
+  // Status
+  isActive: boolean;
+
+  // Fun Theme for this Period
+  theme: {
+    name: string;
+    primaryEmoji: string;
+    backgroundColor?: string;
+  };
+
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Review Period Schema
+ */
+const ReviewPeriodSchema = new Schema<IReviewPeriod>(
+  {
+    // Period Details
+    name: {
+      type: String,
+      required: [true, 'Period name is required'],
+      trim: true,
+      maxlength: [100, 'Period name cannot exceed 100 characters'],
+    },
+    slug: {
+      type: String,
+      required: [true, 'Slug is required'],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'Slug can only contain lowercase letters, numbers, and hyphens',
+      ],
+      index: true,
+    },
+
+    // Date Range
+    startDate: {
+      type: Date,
+      required: [true, 'Start date is required'],
+      index: true,
+    },
+    endDate: {
+      type: Date,
+      required: [true, 'End date is required'],
+      validate: {
+        validator: function (this: IReviewPeriod, value: Date) {
+          return value > this.startDate;
+        },
+        message: 'End date must be after start date',
+      },
+      index: true,
+    },
+
+    // Status
+    isActive: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    // Fun Theme
+    theme: {
+      name: {
+        type: String,
+        required: [true, 'Theme name is required'],
+        trim: true,
+        default: 'The Mula Season',
+      },
+      primaryEmoji: {
+        type: String,
+        default: '🌿',
+        maxlength: [10, 'Emoji cannot exceed 10 characters'],
+      },
+      backgroundColor: {
+        type: String,
+        default: '#f0fdf4',
+        match: [
+          /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+          'Please provide a valid hex color code',
+        ],
+      },
+    },
+  },
+  {
+    timestamps: true,
+    collection: 'review_periods',
+  }
+);
+
+/**
+ * Indexes for performance optimization
+ */
+ReviewPeriodSchema.index({ slug: 1 }); // Already unique
+ReviewPeriodSchema.index({ isActive: 1 });
+ReviewPeriodSchema.index({ startDate: 1, endDate: 1 }); // Compound index for date range queries
+ReviewPeriodSchema.index({ createdAt: -1 }); // For sorting by creation date
+
+/**
+ * Virtual to check if period is currently active (within date range)
+ */
+ReviewPeriodSchema.virtual('isCurrentlyActive').get(function () {
+  const now = new Date();
+  return this.isActive && now >= this.startDate && now <= this.endDate;
+});
+
+/**
+ * Virtual for period duration in days
+ */
+ReviewPeriodSchema.virtual('durationDays').get(function () {
+  const diffTime = Math.abs(this.endDate.getTime() - this.startDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+});
+
+/**
+ * Virtual for days remaining (if active)
+ */
+ReviewPeriodSchema.virtual('daysRemaining').get(function () {
+  if (!this.isActive) return 0;
+  const now = new Date();
+  if (now > this.endDate) return 0;
+  const diffTime = this.endDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+});
+
+/**
+ * Static method to get active period
+ */
+ReviewPeriodSchema.statics.getActivePeriod = async function (): Promise<IReviewPeriod | null> {
+  return await this.findOne({ isActive: true });
+};
+
+/**
+ * Static method to deactivate all other periods before activating one
+ */
+ReviewPeriodSchema.statics.activatePeriod = async function (
+  periodId: string
+): Promise<IReviewPeriod | null> {
+  // Deactivate all periods
+  await this.updateMany({}, { isActive: false });
+
+  // Activate the specified period
+  return await this.findByIdAndUpdate(
+    periodId,
+    { isActive: true },
+    { new: true }
+  );
+};
+
+/**
+ * Pre-save middleware to ensure only one active period
+ */
+ReviewPeriodSchema.pre('save', async function (next) {
+  if (this.isModified('isActive') && this.isActive) {
+    // If this period is being set to active, deactivate all others
+    await mongoose.model('ReviewPeriod').updateMany(
+      { _id: { $ne: this._id } },
+      { isActive: false }
+    );
+  }
+  next();
+});
+
+/**
+ * Ensure virtuals are included in JSON output
+ */
+ReviewPeriodSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc, ret) {
+    delete ret.__v;
+    return ret;
+  },
+});
+
+ReviewPeriodSchema.set('toObject', {
+  virtuals: true,
+});
+
+/**
+ * Review Period Model
+ * Export as singleton to prevent model recompilation
+ */
+const ReviewPeriod: Model<IReviewPeriod> =
+  mongoose.models.ReviewPeriod ||
+  mongoose.model<IReviewPeriod>('ReviewPeriod', ReviewPeriodSchema);
+
+export default ReviewPeriod;
