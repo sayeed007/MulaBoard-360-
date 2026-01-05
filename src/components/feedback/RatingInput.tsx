@@ -48,13 +48,13 @@ export default function RatingInput({
               onMouseLeave={() => !disabled && setHoveredValue(null)}
               disabled={disabled}
               className={`
-                text-4xl p-2 rounded-lg transition-all duration-200
-                ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-125'}
-                ${isSelected || isHovered ? 'scale-125' : 'scale-100'}
-                ${
-                  isBeforeHovered || (hoveredValue === null && isBeforeSelected)
-                    ? 'opacity-100'
-                    : 'opacity-30'
+                text-4xl p-2 rounded-xl transition-all duration-200 border-2
+                ${disabled ? 'cursor-not-allowed opacity-50 border-transparent' : 'cursor-pointer hover:scale-110'}
+                ${isSelected ? 'border-primary bg-primary/5 scale-110' : 'border-transparent scale-100'}
+                ${!isSelected && isHovered ? 'scale-110' : ''}
+                ${isBeforeHovered || (hoveredValue === null && isBeforeSelected)
+                  ? 'opacity-100'
+                  : 'opacity-30 grayscale'
                 }
               `}
               aria-label={`${rating.label} - ${rating.value} stars`}

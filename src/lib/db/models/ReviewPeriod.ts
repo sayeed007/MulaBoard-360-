@@ -29,6 +29,15 @@ export interface IReviewPeriod extends Document {
 }
 
 /**
+ * Static methods interface
+ */
+export interface IReviewPeriodModel extends Model<IReviewPeriod> {
+  getActivePeriod(): Promise<IReviewPeriod | null>;
+  activatePeriod(periodId: string): Promise<IReviewPeriod | null>;
+}
+
+
+/**
  * Review Period Schema
  */
 const ReviewPeriodSchema = new Schema<IReviewPeriod>(
@@ -201,8 +210,8 @@ ReviewPeriodSchema.set('toObject', {
  * Review Period Model
  * Export as singleton to prevent model recompilation
  */
-const ReviewPeriod: Model<IReviewPeriod> =
-  mongoose.models.ReviewPeriod ||
-  mongoose.model<IReviewPeriod>('ReviewPeriod', ReviewPeriodSchema);
+const ReviewPeriod: IReviewPeriodModel =
+  (mongoose.models.ReviewPeriod as IReviewPeriodModel) ||
+  mongoose.model<IReviewPeriod, IReviewPeriodModel>('ReviewPeriod', ReviewPeriodSchema);
 
 export default ReviewPeriod;
