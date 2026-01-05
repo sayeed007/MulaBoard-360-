@@ -88,6 +88,8 @@ export default async function PublicProfilePage({
   const userForForm = {
     ...profileUser,
     _id: profileUser._id.toString(),
+    createdAt: profileUser.createdAt?.toISOString() || new Date().toISOString(),
+    updatedAt: profileUser.updatedAt?.toISOString() || new Date().toISOString(),
   };
 
   return (
