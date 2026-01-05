@@ -5,9 +5,39 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema, type UpdateProfileInput } from '@/validators/user';
-import { fileToBase64, validateImageFile } from '@/lib/cloudinary/utils';
 import type { User } from '@/types/user';
 import { Button, Input, Textarea, Alert } from '@/components/ui';
+
+// Inline utility functions to avoid Cloudinary import chain
+function validateImageFile(file: File): { valid: boolean; error?: string } {
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return {
+      valid: false,
+      error: 'Invalid file type. Please upload a JPG, PNG, or WebP image.',
+    };
+  }
+
+  if (file.size > MAX_SIZE) {
+    return {
+      valid: false,
+      error: 'File is too large. Maximum size is 5MB.',
+    };
+  }
+
+  return { valid: true };
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+}
 
 interface ProfileFormProps {
   user: User;
