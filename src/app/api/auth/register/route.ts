@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create new user
+    // Create new user with pending status
     const user = await User.create({
       email: email.toLowerCase(),
       password, // Will be hashed by the pre-save middleware
@@ -84,7 +84,8 @@ export async function POST(request: NextRequest) {
       department,
       publicSlug,
       role: 'employee', // Default role
-      isProfileActive: true,
+      accountStatus: 'pending', // Requires admin approval
+      isProfileActive: false, // Inactive until approved
       settings: {
         emailNotifications: true,
         showAggregatePublicly: false,
@@ -95,12 +96,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Account created successfully',
+        message: 'Registration successful! Your account is pending admin approval. You will receive an email once approved.',
         data: {
           id: user._id,
           email: user.email,
           fullName: user.fullName,
           publicSlug: user.publicSlug,
+          accountStatus: user.accountStatus,
         },
       },
       { status: 201 }

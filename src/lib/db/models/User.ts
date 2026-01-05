@@ -11,6 +11,12 @@ export interface IUser extends Document {
   password: string;
   role: 'employee' | 'admin';
 
+  // Account Status
+  accountStatus: 'pending' | 'approved' | 'rejected';
+  approvedBy?: mongoose.Types.ObjectId;
+  approvedAt?: Date;
+  rejectionReason?: string;
+
   // Profile Information
   fullName: string;
   designation: string;
@@ -68,6 +74,29 @@ const UserSchema = new Schema<IUser>(
       },
       default: 'employee',
       index: true,
+    },
+
+    // Account Status
+    accountStatus: {
+      type: String,
+      enum: {
+        values: ['pending', 'approved', 'rejected'],
+        message: '{VALUE} is not a valid account status',
+      },
+      default: 'pending',
+      index: true,
+    },
+    approvedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    approvedAt: {
+      type: Date,
+    },
+    rejectionReason: {
+      type: String,
+      trim: true,
+      maxlength: [500, 'Rejection reason cannot exceed 500 characters'],
     },
 
     // Profile Information
@@ -146,19 +175,14 @@ const UserSchema = new Schema<IUser>(
  * Pre-save middleware to hash password
  * Only hashes if password is modified or new
  */
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function () {
   // Only hash the password if it has been modified (or is new)
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
-  try {
-    // Hash password with bcrypt (12 rounds)
-    this.password = await hashPassword(this.password, 12);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
+  // Hash password with bcrypt (12 rounds)
+  this.password = await hashPassword(this.password, 12);
 });
 
 /**

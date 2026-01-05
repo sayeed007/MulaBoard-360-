@@ -1,10 +1,12 @@
-import { auth } from '@/lib/auth/auth';
+import NextAuth from 'next-auth';
+import { authConfig } from '@/lib/auth/auth.config.edge';
 
 /**
  * Middleware for Route Protection
  *
- * This middleware uses NextAuth.js v5's auth() function
- * to protect routes and handle authorization.
+ * This middleware uses NextAuth.js v5 with Edge Runtime compatible configuration.
+ * The edge config excludes database operations and Node.js modules to be compatible
+ * with the Edge Runtime.
  *
  * Protected routes:
  * - /dashboard - Requires authentication (employee or admin)
@@ -14,7 +16,7 @@ import { auth } from '@/lib/auth/auth';
  * - /admin - Requires admin role
  */
 
-export default auth;
+export default NextAuth(authConfig).auth;
 
 /**
  * Matcher Configuration
@@ -32,6 +34,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public files (images, fonts, etc.)
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api/auth|_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

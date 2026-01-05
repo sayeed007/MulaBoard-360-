@@ -4,7 +4,12 @@
       "Bash(npx create-next-app:*)",
       "Bash(npm install:*)",
       "Bash(tree:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(timeout 10 npm run dev)",
+      "Bash(npm uninstall:*)",
+      "Bash(timeout 15 npm run dev)",
+      "Bash(npm run seed:admin:*)"
     ]
   }
 }
