@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { updateProfileSchema } from '@/validators/user';
@@ -11,7 +11,7 @@ import { updateProfileSchema } from '@/validators/user';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -27,10 +27,10 @@ export async function PATCH(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Authorization: Users can only update their own profile, admins can update any
-    if (currentUser.id !== id && currentUser.role !== 'admin') {
+    if (currentUser.id !== id && !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -49,7 +49,7 @@ export async function PATCH(
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );
@@ -122,10 +122,10 @@ export async function PATCH(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Connect to database
     await connectDB();
@@ -192,13 +192,13 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -208,7 +208,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Prevent deleting self
     if (currentUser.id === id) {

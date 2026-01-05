@@ -6,12 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateSettingsSchema, type UpdateSettingsInput } from '@/validators/user';
 import type { User } from '@/types/user';
-
-/**
- * Settings Form Component
- *
- * Allows users to manage their account settings (currently profile visibility)
- */
+import { Button, Switch, Alert } from '@/components/ui';
 
 interface SettingsFormProps {
   user: User;
@@ -71,91 +66,80 @@ export default function SettingsForm({ user }: SettingsFormProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+          <Alert variant="danger" title="Error">
             {error}
-          </div>
+          </Alert>
         )}
 
         {success && (
-          <div className="rounded-md bg-primary/10 p-4 text-sm text-primary">
+          <Alert variant="success" title="Success">
             {success}
-          </div>
+          </Alert>
         )}
 
         {/* Profile Visibility Toggle */}
-        <div className="space-y-4">
-          <div className="flex items-start gap-4">
-            <input
-              id="isProfileActive"
-              type="checkbox"
-              disabled={isLoading}
-              {...register('isProfileActive')}
-              className="mt-1 w-5 h-5 rounded border-input focus:ring-2 focus:ring-primary cursor-pointer"
-            />
-            <div className="flex-1">
-              <label
-                htmlFor="isProfileActive"
-                className="block font-medium cursor-pointer"
-              >
-                Make my profile visible
-              </label>
-              <p className="text-sm text-muted-foreground mt-1">
-                When enabled, colleagues can find your profile and give you feedback.
-                When disabled, your profile is hidden from the public directory.
+        <div className="bg-background/50 rounded-xl p-6 border border-border/50">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <h3 className="font-semibold text-foreground">Public Profile Visibility</h3>
+              <p className="text-sm text-muted-foreground">
+                Allow colleagues to find your profile and send feedback.
               </p>
             </div>
+            <Switch
+              id="isProfileActive"
+              disabled={isLoading}
+              {...register('isProfileActive')}
+            />
           </div>
           {errors.isProfileActive && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-destructive mt-2">
               {errors.isProfileActive.message}
             </p>
           )}
         </div>
 
         {/* Privacy Notice */}
-        <div className="bg-muted/50 rounded-lg p-4 border">
-          <h4 className="font-medium mb-2">Privacy Notice</h4>
-          <ul className="text-sm text-muted-foreground space-y-2">
+        <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-5 border border-blue-100 dark:border-blue-900/50">
+          <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-3 flex items-center gap-2">
+            <span>🛡️</span> Privacy & Security
+          </h4>
+          <ul className="text-sm text-muted-foreground space-y-2 pl-1">
             <li className="flex gap-2">
-              <span>•</span>
+              <span className="text-blue-500">•</span>
               <span>
-                Your email address is never shown publicly on your profile
+                Your email address is <span className="font-medium text-foreground">hidden</span> from public view.
               </span>
             </li>
             <li className="flex gap-2">
-              <span>•</span>
+              <span className="text-blue-500">•</span>
               <span>
-                All feedback you receive is anonymous to protect reviewer privacy
+                Feedback is <span className="font-medium text-foreground">100% anonymous</span> to ensure honesty.
               </span>
             </li>
             <li className="flex gap-2">
-              <span>•</span>
+              <span className="text-blue-500">•</span>
               <span>
-                Your profile visibility setting only affects whether colleagues can
-                find and view your profile
-              </span>
-            </li>
-            <li className="flex gap-2">
-              <span>•</span>
-              <span>
-                Admins can always view your profile regardless of this setting
+                Admins can always access system data for moderation.
               </span>
             </li>
           </ul>
         </div>
 
         {/* Submit Button */}
-        <div className="flex gap-4">
-          <button
+        <div className="flex justify-end">
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            variant="primary"
+            size="lg"
+            isLoading={isLoading}
+            className="w-full sm:w-auto"
           >
-            {isLoading ? 'Saving...' : 'Save Settings'}
-          </button>
+            Save Settings
+          </Button>
         </div>
       </form>
     </div>

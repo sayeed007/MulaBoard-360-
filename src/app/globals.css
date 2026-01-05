@@ -4,7 +4,8 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #09090b;
+  /* zinc-950 */
 
   /* Mula Rating Colors */
   --golden-mula: #FFD700;
@@ -15,29 +16,42 @@
   --rotten-tomato-bg: #FECACA;
 
   /* Semantic Colors */
-  --primary: #10b981; /* Green for Mula theme */
+  --primary: #10b981;
+  /* emerald-500 */
   --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #1f2937;
-  --muted: #f9fafb;
-  --muted-foreground: #6b7280;
-  --accent: #fbbf24;
-  --accent-foreground: #78350f;
+
+  --secondary: #f4f4f5;
+  /* zinc-100 */
+  --secondary-foreground: #18181b;
+  /* zinc-900 */
+
+  --muted: #f4f4f5;
+  /* zinc-100 */
+  --muted-foreground: #71717a;
+  /* zinc-500 */
+
+  --accent: #f4f4f5;
+  /* zinc-100 */
+  --accent-foreground: #18181b;
+  /* zinc-900 */
+
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
   /* Border & Input */
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --border: #e4e4e7;
+  /* zinc-200 */
+  --input: #e4e4e7;
+  /* zinc-200 */
   --ring: #10b981;
 
   /* Card */
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #09090b;
 
   /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover-foreground: #09090b;
 
   /* Radius */
   --radius: 0.5rem;
@@ -45,24 +59,41 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --card: #1f1f1f;
-    --card-foreground: #ededed;
-    --popover: #1f1f1f;
-    --popover-foreground: #ededed;
+    --background: #09090b;
+    /* zinc-950 */
+    --foreground: #fafafa;
+    /* zinc-50 */
+
+    --card: #09090b;
+    --card-foreground: #fafafa;
+
+    --popover: #09090b;
+    --popover-foreground: #fafafa;
+
     --primary: #10b981;
     --primary-foreground: #ffffff;
-    --secondary: #262626;
-    --secondary-foreground: #ededed;
-    --muted: #171717;
-    --muted-foreground: #a3a3a3;
-    --accent: #fbbf24;
-    --accent-foreground: #fef3c7;
-    --destructive: #dc2626;
-    --destructive-foreground: #ffffff;
-    --border: #262626;
-    --input: #262626;
+
+    --secondary: #27272a;
+    /* zinc-800 */
+    --secondary-foreground: #fafafa;
+
+    --muted: #27272a;
+    /* zinc-800 */
+    --muted-foreground: #a1a1aa;
+    /* zinc-400 */
+
+    --accent: #27272a;
+    /* zinc-800 */
+    --accent-foreground: #fafafa;
+
+    --destructive: #7f1d1d;
+    /* red-900 */
+    --destructive-foreground: #fafafa;
+
+    --border: #27272a;
+    /* zinc-800 */
+    --input: #27272a;
+    /* zinc-800 */
     --ring: #10b981;
   }
 }
@@ -86,6 +117,10 @@
     animation: shake 0.5s ease-in-out;
   }
 
+  .animate-slide-down {
+    animation: slideDown 0.2s ease-out;
+  }
+
   /* Scrollbar Styling */
   ::-webkit-scrollbar {
     width: 8px;
@@ -103,5 +138,59 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--foreground);
+  }
+}
+
+@keyframes sparkle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes bounce-gentle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

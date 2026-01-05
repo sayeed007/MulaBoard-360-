@@ -5,14 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema, type UpdateProfileInput } from '@/validators/user';
-import { fileToBase64, validateImageFile } from '@/lib/cloudinary/upload';
+import { fileToBase64, validateImageFile } from '@/lib/cloudinary/utils';
 import type { User } from '@/types/user';
-
-/**
- * Profile Edit Form Component
- *
- * Allows users to edit their profile information and upload profile image
- */
+import { Button, Input, Textarea, Alert } from '@/components/ui';
 
 interface ProfileFormProps {
   user: User;
@@ -128,39 +123,43 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     <div className="w-full max-w-2xl space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+          <Alert variant="danger" title="Error">
             {error}
-          </div>
+          </Alert>
         )}
 
         {success && (
-          <div className="rounded-md bg-primary/10 p-4 text-sm text-primary">
+          <Alert variant="success" title="Success">
             {success}
-          </div>
+          </Alert>
         )}
 
         {/* Profile Image Upload */}
         <div>
-          <label className="block text-sm font-medium mb-2">Profile Image</label>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover border-2 border-border"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center text-4xl border-2 border-border">
-                  {user.fullName.charAt(0)}
-                </div>
-              )}
+          <label className="block text-sm font-medium mb-4 text-foreground/80">Profile Photo</label>
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <div className={`w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm ${isUploadingImage ? 'opacity-50' : ''}`}>
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center text-4xl text-muted-foreground/50">
+                    {user?.fullName?.charAt(0)}
+                  </div>
+                )}
+              </div>
+
               {isUploadingImage && (
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                  <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
                 </div>
               )}
             </div>
+
             <div className="flex-1">
               <input
                 ref={fileInputRef}
@@ -170,14 +169,17 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 className="hidden"
                 disabled={isUploadingImage}
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploadingImage}
-                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors disabled:opacity-50"
-              >
-                {isUploadingImage ? 'Uploading...' : 'Change Image'}
-              </button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                >
+                  {isUploadingImage ? 'Uploading...' : 'Change Photo'}
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">
                 JPG, PNG or WebP. Max size 5MB.
               </p>
@@ -185,96 +187,60 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           </div>
         </div>
 
-        {/* Full Name */}
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium mb-2">
-            Full Name *
-          </label>
-          <input
+        <div className="grid gap-6">
+          <Input
+            label="Full Name"
             id="fullName"
-            type="text"
+            placeholder="Your Full Name"
+            fullWidth
             disabled={isLoading}
+            error={errors.fullName?.message}
             {...register('fullName')}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-              errors.fullName ? 'border-destructive' : 'border-input'
-            }`}
           />
-          {errors.fullName && (
-            <p className="mt-1 text-sm text-destructive">{errors.fullName.message}</p>
-          )}
-        </div>
 
-        {/* Designation */}
-        <div>
-          <label htmlFor="designation" className="block text-sm font-medium mb-2">
-            Designation *
-          </label>
-          <input
-            id="designation"
-            type="text"
-            disabled={isLoading}
-            {...register('designation')}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-              errors.designation ? 'border-destructive' : 'border-input'
-            }`}
-          />
-          {errors.designation && (
-            <p className="mt-1 text-sm text-destructive">{errors.designation.message}</p>
-          )}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Designation"
+              id="designation"
+              placeholder="e.g. Senior Developer"
+              fullWidth
+              disabled={isLoading}
+              error={errors.designation?.message}
+              {...register('designation')}
+            />
+            <Input
+              label="Department"
+              id="department"
+              placeholder="e.g. Engineering"
+              fullWidth
+              disabled={isLoading}
+              error={errors.department?.message}
+              {...register('department')}
+            />
+          </div>
 
-        {/* Department */}
-        <div>
-          <label htmlFor="department" className="block text-sm font-medium mb-2">
-            Department *
-          </label>
-          <input
-            id="department"
-            type="text"
-            disabled={isLoading}
-            {...register('department')}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-              errors.department ? 'border-destructive' : 'border-input'
-            }`}
-          />
-          {errors.department && (
-            <p className="mt-1 text-sm text-destructive">{errors.department.message}</p>
-          )}
-        </div>
-
-        {/* Bio */}
-        <div>
-          <label htmlFor="bio" className="block text-sm font-medium mb-2">
-            Bio
-            <span className="text-muted-foreground font-normal ml-2">(Optional)</span>
-          </label>
-          <textarea
+          <Textarea
+            label="Bio"
             id="bio"
-            rows={3}
+            placeholder="Tell us a little about yourself (max 200 characters)"
+            fullWidth
+            rows={4}
             disabled={isLoading}
+            error={errors.bio?.message}
+            helperText={`${user.bio?.length || 0}/200 characters`}
             {...register('bio')}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${
-              errors.bio ? 'border-destructive' : 'border-input'
-            }`}
-            placeholder="A short bio about yourself (max 200 characters)"
           />
-          {errors.bio && (
-            <p className="mt-1 text-sm text-destructive">{errors.bio.message}</p>
-          )}
-          <p className="mt-1 text-xs text-muted-foreground">
-            {user.bio?.length || 0}/200 characters
-          </p>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex gap-4">
-          <button
+        <div className="pt-4 flex justify-end">
+          <Button
             type="submit"
-            disabled={isLoading || isUploadingImage}
-            className="flex-1 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            variant="primary"
+            size="lg"
+            isLoading={isLoading || isUploadingImage}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
-          </button>
+            Save Changes
+          </Button>
         </div>
       </form>
     </div>

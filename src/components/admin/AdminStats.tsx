@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { getMulaRatingDetails } from '@/lib/utils/mula-calculator';
 import type { MulaRating } from '@/types/feedback';
 
@@ -128,15 +129,30 @@ export default function AdminStats() {
             const count = stats.mulaDistribution[rating];
             const percentage = stats.mulaDistribution.percentage[rating];
 
+            // Map rating to image path
+            const imagePath = {
+              golden_mula: '/images/golden_mula_transparent.png',
+              fresh_carrot: '/images/fresh_carrot_transparent.png',
+              rotten_tomato: '/images/rotten_tomato_transparent.png',
+            }[rating];
+
             return (
               <div
                 key={rating}
                 className="p-4 rounded-lg border"
                 style={{ backgroundColor: details.bgColor }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">{details.emoji}</span>
-                  <span className="font-semibold" style={{ color: details.color }}>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 relative flex flex-shrink-0">
+                    <Image
+                      src={imagePath}
+                      alt={details.label}
+                      width={60}
+                      height={60}
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="font-semibold text-lg" style={{ color: details.color }}>
                     {details.label}
                   </span>
                 </div>

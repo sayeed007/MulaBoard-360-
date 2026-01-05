@@ -1,6 +1,36 @@
 import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import { CredentialsSignin } from 'next-auth';
 import { loginSchema } from '@/validators/user';
+
+class InvalidLoginError extends CredentialsSignin {
+  constructor() {
+    super()
+    this.code = "invalid_credentials"
+  }
+}
+
+class PendingApprovalError extends CredentialsSignin {
+  constructor() {
+    super()
+    this.code = "pending_approval"
+  }
+}
+
+class RejectedError extends CredentialsSignin {
+  constructor(reason: string) {
+    super()
+    this.code = "rejected"
+    this.message = reason // Try passing reason as message, though code might be safer for logic
+  }
+}
+
+class InactiveProfileError extends CredentialsSignin {
+  constructor() {
+    super()
+    this.code = "inactive_profile"
+  }
+}
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { authConfig as edgeConfig } from './auth.config.edge';
@@ -94,19 +124,19 @@ export const authConfig = {
           // Check account status
           if (user.accountStatus === 'pending') {
             console.error('Account pending approval');
-            throw new Error('Your account is pending admin approval. You will receive an email once approved.');
+            throw new PendingApprovalError();
           }
 
           if (user.accountStatus === 'rejected') {
-            console.error('Account rejected');
             const reason = user.rejectionReason || 'No reason provided';
-            throw new Error(`Your account has been rejected. Reason: ${reason}`);
+            console.error('Account rejected');
+            throw new RejectedError(reason);
           }
 
           // Check if profile is active
           if (!user.isProfileActive) {
             console.error('User profile is inactive');
-            return null;
+            throw new InactiveProfileError();
           }
 
           // Return user object (password will be excluded by toJSON)
@@ -116,8 +146,19 @@ export const authConfig = {
             name: user.fullName,
             role: user.role,
             image: user.profileImage || null,
+            publicSlug: user.publicSlug,
+            isProfileActive: user.isProfileActive,
           };
         } catch (error) {
+          if (error instanceof CredentialsSignin) {
+            throw error;
+          }
+          if (error instanceof Error && error.message.includes('pending admin approval')) {
+            throw new PendingApprovalError();
+          }
+          if (error instanceof Error && error.message.includes('rejected')) {
+            throw new RejectedError(error.message.split('Reason: ')[1] || 'Account rejected');
+          }
           console.error('Error during authentication:', error);
           return null;
         }

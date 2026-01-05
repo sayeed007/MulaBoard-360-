@@ -298,10 +298,9 @@ FeedbackSchema.methods.getAverageScore = function (): number {
 /**
  * Pre-save middleware to auto-calculate Mula rating
  */
-FeedbackSchema.pre('save', function (next) {
+FeedbackSchema.pre('save', function () {
   // Always recalculate Mula rating before saving
   this.mulaRating = this.calculateMulaRating();
-  next();
 });
 
 /**
@@ -403,10 +402,8 @@ FeedbackSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
     // Remove sensitive fields from JSON output
-    delete ret.reviewerFingerprint;
-    delete ret.reviewerIpHash;
-    delete ret.__v;
-    return ret;
+    const { reviewerFingerprint, reviewerIpHash, __v, ...rest } = ret;
+    return rest;
   },
 });
 

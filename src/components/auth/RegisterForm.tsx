@@ -6,25 +6,35 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterInput } from '@/validators/user';
 import Link from 'next/link';
-
-/**
- * Registration Form Component
- *
- * Handles new user registration with profile information
- */
+import { Button, Input, Alert } from '@/components/ui';
+import { User, Mail, Briefcase, Building2, Lock, Eye, EyeOff, Check } from 'lucide-react';
 
 export default function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
+    mode: 'onChange', // Validate on change for realtime feedback
   });
+
+  const password = watch('password');
+
+  // Password Validation Logic
+  const validations = [
+    { label: '8+ chars', valid: password?.length >= 8 },
+    { label: 'Uppercase', valid: /[A-Z]/.test(password || '') },
+    { label: 'Lowercase', valid: /[a-z]/.test(password || '') },
+    { label: 'Number', valid: /[0-9]/.test(password || '') },
+  ];
 
   const onSubmit = async (data: RegisterInput) => {
     setError('');
@@ -47,7 +57,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // Successful registration - redirect to login
       router.push('/login?registered=true');
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -56,172 +65,146 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-2xl space-y-8">
+    <div className="w-full max-w-2xl space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Create Your Account</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Join MulaBoard to receive and give anonymous feedback
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create Account</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Join MulaBoard to receive anonymous feedback
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+      {/* Admin Approval Notice */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
+        <p className="text-sm text-blue-900 dark:text-blue-100 text-center">
+          <strong>📋 Admin Approval Required:</strong> After registration, your account will be pending admin approval.
+          You'll receive an email notification once your account is approved and you can log in.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+          <Alert variant="danger" title="Registration Failed">
             {error}
-          </div>
+          </Alert>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Full Name */}
-          <div className="md:col-span-2">
-            <label htmlFor="fullName" className="block text-sm font-medium mb-2">
-              Full Name *
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              autoComplete="name"
-              disabled={isLoading}
-              {...register('fullName')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.fullName ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="Sayeed Hossen"
-            />
-            {errors.fullName && (
-              <p className="mt-1 text-sm text-destructive">{errors.fullName.message}</p>
-            )}
-          </div>
+          <Input
+            label="Full Name"
+            type="text"
+            id="fullName"
+            autoComplete="name"
+            placeholder="John Doe"
+            error={errors.fullName?.message}
+            fullWidth
+            leftIcon={<User className="h-4 w-4" />}
+            {...register('fullName')}
+          />
 
-          {/* Email */}
-          <div className="md:col-span-2">
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email Address *
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              disabled={isLoading}
-              {...register('email')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.email ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="your.email@company.com"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Designation */}
-          <div>
-            <label htmlFor="designation" className="block text-sm font-medium mb-2">
-              Designation *
-            </label>
-            <input
-              id="designation"
-              type="text"
-              autoComplete="organization-title"
-              disabled={isLoading}
-              {...register('designation')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.designation ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="Senior Developer"
-            />
-            {errors.designation && (
-              <p className="mt-1 text-sm text-destructive">{errors.designation.message}</p>
-            )}
-          </div>
-
-          {/* Department */}
-          <div>
-            <label htmlFor="department" className="block text-sm font-medium mb-2">
-              Department *
-            </label>
-            <input
-              id="department"
-              type="text"
-              autoComplete="organization"
-              disabled={isLoading}
-              {...register('department')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.department ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="Engineering"
-            />
-            {errors.department && (
-              <p className="mt-1 text-sm text-destructive">{errors.department.message}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              Password *
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              disabled={isLoading}
-              {...register('password')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.password ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="Min. 8 characters"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
-              Confirm Password *
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              disabled={isLoading}
-              {...register('confirmPassword')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                errors.confirmPassword ? 'border-destructive' : 'border-input'
-              }`}
-              placeholder="Re-enter password"
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+          <Input
+            label="Email Address"
+            type="email"
+            id="email"
+            autoComplete="email"
+            placeholder="john@example.com"
+            error={errors.email?.message}
+            fullWidth
+            leftIcon={<Mail className="h-4 w-4" />}
+            {...register('email')}
+          />
         </div>
 
-        {/* Password Requirements */}
-        <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
-          <p className="font-medium mb-1">Password must contain:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>At least 8 characters</li>
-            <li>One uppercase letter</li>
-            <li>One lowercase letter</li>
-            <li>One number</li>
-          </ul>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Designation"
+            type="text"
+            id="designation"
+            autoComplete="organization-title"
+            placeholder="Engineer"
+            error={errors.designation?.message}
+            fullWidth
+            leftIcon={<Briefcase className="h-4 w-4" />}
+            {...register('designation')}
+          />
+
+          <Input
+            label="Department"
+            type="text"
+            id="department"
+            autoComplete="organization"
+            placeholder="Product"
+            error={errors.department?.message}
+            fullWidth
+            leftIcon={<Building2 className="h-4 w-4" />}
+            {...register('department')}
+          />
         </div>
 
-        {/* Submit Button */}
-        <button
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            autoComplete="new-password"
+            placeholder="********"
+            error={errors.password?.message}
+            fullWidth
+            leftIcon={<Lock className="h-4 w-4" />}
+            rightIcon={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            }
+            {...register('password')}
+          />
+
+          <Input
+            label="Confirm"
+            type={showConfirmPassword ? 'text' : 'password'}
+            id="confirmPassword"
+            autoComplete="new-password"
+            placeholder="********"
+            error={errors.confirmPassword?.message}
+            fullWidth
+            leftIcon={<Lock className="h-4 w-4" />}
+            rightIcon={
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="hover:text-foreground transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            }
+            {...register('confirmPassword')}
+          />
+        </div>
+
+        {/* Compact Password Strength */}
+        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs bg-muted/40 p-3 rounded-lg border border-border/50">
+          {validations.map((rule) => (
+            <div key={rule.label} className={`flex items-center gap-1 ${rule.valid ? 'text-green-600 dark:text-green-500 font-medium' : 'text-muted-foreground'}`}>
+              {rule.valid ? <Check className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />}
+              <span>{rule.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <Button
           type="submit"
-          disabled={isLoading}
-          className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          variant="primary"
+          size="lg"
+          fullWidth
+          isLoading={isLoading}
+          className="mt-6"
         >
-          {isLoading ? 'Creating Account...' : 'Create Account'}
-        </button>
+          Create Account
+        </Button>
 
-        {/* Login Link */}
         <div className="text-center text-sm">
           <span className="text-muted-foreground">Already have an account? </span>
           <Link

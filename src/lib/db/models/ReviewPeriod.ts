@@ -63,8 +63,9 @@ const ReviewPeriodSchema = new Schema<IReviewPeriod>(
       type: Date,
       required: [true, 'End date is required'],
       validate: {
-        validator: function (this: IReviewPeriod, value: Date) {
-          return value > this.startDate;
+        validator: function (value: Date) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return value > (this as any).startDate;
         },
         message: 'End date must be after start date',
       },
@@ -171,7 +172,7 @@ ReviewPeriodSchema.statics.activatePeriod = async function (
 /**
  * Pre-save middleware to ensure only one active period
  */
-ReviewPeriodSchema.pre('save', async function (next) {
+ReviewPeriodSchema.pre('save', async function () {
   if (this.isModified('isActive') && this.isActive) {
     // If this period is being set to active, deactivate all others
     await mongoose.model('ReviewPeriod').updateMany(
@@ -179,7 +180,6 @@ ReviewPeriodSchema.pre('save', async function (next) {
       { isActive: false }
     );
   }
-  next();
 });
 
 /**
@@ -188,8 +188,8 @@ ReviewPeriodSchema.pre('save', async function (next) {
 ReviewPeriodSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
-    delete ret.__v;
-    return ret;
+    const { __v, ...rest } = ret;
+    return rest;
   },
 });
 

@@ -15,11 +15,11 @@ import { MULA_RATINGS } from '@/lib/constants/ratings';
  */
 export function calculateAverageScore(ratings: FeedbackRatings): number {
   const scores = [
+    ratings.workQuality.score,
     ratings.communication.score,
-    ratings.teamwork.score,
-    ratings.technical.score,
-    ratings.problemSolving.score,
-    ratings.attitude.score,
+    ratings.teamBehavior.score,
+    ratings.accountability.score,
+    ratings.overall.score,
   ];
 
   const sum = scores.reduce((acc, score) => acc + score, 0);

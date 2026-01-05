@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, forwardRef } from 'react';
 /**
  * Button Variants
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
@@ -55,12 +55,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ghost: 'text-primary hover:bg-primary/10 focus:ring-primary',
       danger:
         'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive',
+      destructive:
+        'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive',
     };
 
     const sizeStyles: Record<ButtonSize, string> = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: 'h-9 px-4 text-xs rounded-md',
+      md: 'h-11 px-8 text-sm rounded-lg',
+      lg: 'h-14 px-8 text-base rounded-xl',
     };
 
     const widthStyle = fullWidth ? 'w-full' : '';

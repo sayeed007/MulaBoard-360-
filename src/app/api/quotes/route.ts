@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import Quote from '@/lib/db/models/Quote';
 import { createQuoteSchema } from '@/validators/quote';
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     if (isAdmin) {
       const currentUser = await getCurrentUser();
 
-      if (!currentUser || currentUser.role !== 'admin') {
+      if (!currentUser || !hasAdminRole(currentUser.role)) {
         return NextResponse.json(
           {
             success: false,
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );

@@ -28,6 +28,8 @@ export const authConfig = {
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;
+        token.publicSlug = user.publicSlug;
+        token.isProfileActive = user.isProfileActive;
       }
 
       // Handle session updates
@@ -45,6 +47,8 @@ export const authConfig = {
         session.user.email = token.email as string;
         session.user.role = token.role as 'employee' | 'admin';
         session.user.name = token.name as string;
+        session.user.publicSlug = token.publicSlug as string;
+        session.user.isProfileActive = token.isProfileActive as boolean;
       }
 
       return session;
@@ -60,9 +64,10 @@ export const authConfig = {
       const isOnAdmin = nextUrl.pathname.startsWith('/admin');
       const isOnAuth = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/register');
 
-      // Redirect to dashboard if logged in and trying to access auth pages
+      // Redirect to appropriate page if logged in and trying to access auth pages
       if (isOnAuth && isLoggedIn) {
-        return Response.redirect(new URL('/dashboard', nextUrl));
+        const redirectPath = auth.user.role === 'admin' ? '/admin' : '/dashboard';
+        return Response.redirect(new URL(redirectPath, nextUrl));
       }
 
       // Require authentication for protected routes
@@ -131,6 +136,8 @@ export const authConfig = {
             name: user.fullName,
             role: user.role,
             image: user.profileImage || null,
+            publicSlug: user.publicSlug,
+            isProfileActive: user.isProfileActive,
           };
         } catch (error) {
           console.error('Error during authentication:', error);

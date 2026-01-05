@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear LocalStorage - MulaBoard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #1a202c;
+      margin-bottom: 16px;
+      font-size: 28px;
+    }
+    
+    .alert {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .alert-title {
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+    
+    .alert-text {
+      color: #78350f;
+      line-height: 1.6;
+    }
+    
+    .storage-item {
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      border-left: 4px solid #ef4444;
+    }
+    
+    .storage-key {
+      font-weight: 600;
+      color: #dc2626;
+      margin-bottom: 4px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #6366f1;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #4f46e5;
+      transform: translateY(-1px);
+    }
+    
+    .success-message {
+      background: #d1fae5;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 24px;
+      color: #065f46;
+      display: none;
+    }
+    
+    .info {
+      background: #dbeafe;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+      color: #1e40af;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #1f2937;
+      color: #10b981;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Clear Old Authentication Data</h1>
+    
+    <div class="alert">
+      <div class="alert-title">⚠️ Conflicting Authentication Data Detected</div>
+      <div class="alert-text">
+        Your browser has localStorage data from a different application (LMS) that's interfering with MulaBoard authentication.
+      </div>
+    </div>
+    
+    <div id="storage-list">
+      <!-- Will be populated by JavaScript -->
+    </div>
+    
+    <div class="button-group">
+      <button class="btn-danger" onclick="clearOldAuth()">
+        🗑️ Clear Old Data
+      </button>
+      <button class="btn-secondary" onclick="clearAll()">
+        🔥 Clear All Storage
+      </button>
+      <button class="btn-success" onclick="refreshPage()">
+        🔄 Refresh Page
+      </button>
+    </div>
+    
+    <div id="success-message" class="success-message">
+      ✅ Successfully cleared old authentication data! You can now close this tab and log in to MulaBoard.
+    </div>
+    
+    <div class="info">
+      <strong>What's happening?</strong><br>
+      You have authentication data from another app (admin@lms.com) stored in localStorage with <code>role: "super_admin"</code>.
+      This is conflicting with MulaBoard's NextAuth system. Clear it to fix the admin route access issue.
+    </div>
+  </div>
+  
+  <script>
+    // Function to display current localStorage items
+    function displayStorageItems() {
+      const container = document.getElementById('storage-list');
+      container.innerHTML = '';
+      
+      const problematicKeys = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('persist')) {
+          problematicKeys.push(key);
+          const value = localStorage.getItem(key);
+          const truncated = value.length > 100 ? value.substring(0, 100) + '...' : value;
+          
+          const item = document.createElement('div');
+          item.className = 'storage-item';
+          item.innerHTML = `
+            <div class="storage-key">${key}</div>
+            <div>${truncated}</div>
+          `;
+          container.appendChild(item);
+        }
+      }
+      
+      if (problematicKeys.length === 0) {
+        container.innerHTML = '<div class="success-message" style="display: block;">✅ No conflicting data found!</div>';
+      }
+    }
+    
+    // Function to clear only the problematic auth data
+    function clearOldAuth() {
+      const keysToRemove = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('persist')) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      displayStorageItems();
+      document.getElementById('success-message').style.display = 'block';
+      
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    }
+    
+    // Function to clear all localStorage
+    function clearAll() {
+      if (confirm('This will clear ALL localStorage data. Are you sure?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        displayStorageItems();
+        document.getElementById('success-message').style.display = 'block';
+        
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      }
+    }
+    
+    // Function to refresh the page
+    function refreshPage() {
+      location.reload();
+    }
+    
+    // Display items on load
+    displayStorageItems();
+  </script>
+</body>
+</html>

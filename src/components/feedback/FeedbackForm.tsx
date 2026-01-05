@@ -32,6 +32,7 @@ export default function FeedbackForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingEligibility, setIsCheckingEligibility] = useState(true);
   const [eligibilityError, setEligibilityError] = useState<string>('');
+  const [confirmation, setConfirmation] = useState(false);
 
   // Track form load time for spam prevention
   const formLoadTime = useRef(Date.now());
@@ -46,16 +47,15 @@ export default function FeedbackForm({
     resolver: zodResolver(feedbackSubmissionSchema),
     defaultValues: {
       ratings: {
+        workQuality: { score: 0, comment: '' },
         communication: { score: 0, comment: '' },
-        teamwork: { score: 0, comment: '' },
-        technical: { score: 0, comment: '' },
-        problemSolving: { score: 0, comment: '' },
-        attitude: { score: 0, comment: '' },
+        teamBehavior: { score: 0, comment: '' },
+        accountability: { score: 0, comment: '' },
+        overall: { score: 0, comment: '' },
       },
       strengths: '',
       improvements: '',
-      honeypot: '',
-      confirmation: false,
+      website: '',
     },
   });
 
@@ -196,11 +196,11 @@ export default function FeedbackForm({
                 <RatingCategory
                   category={category}
                   score={field.value.score}
-                  comment={field.value.comment}
+                  comment={field.value.comment || ''}
                   onScoreChange={(score) => field.onChange({ ...field.value, score })}
                   onCommentChange={(comment) => field.onChange({ ...field.value, comment })}
                   disabled={isSubmitting}
-                  error={fieldState.error?.score?.message}
+                  error={fieldState.error?.message}
                 />
               )}
             />
@@ -266,7 +266,7 @@ export default function FeedbackForm({
         {/* Honeypot (hidden field for spam prevention) */}
         <input
           type="text"
-          {...register('honeypot')}
+          {...register('website')}
           className="hidden"
           tabIndex={-1}
           autoComplete="off"
@@ -278,7 +278,8 @@ export default function FeedbackForm({
             <input
               type="checkbox"
               id="confirmation"
-              {...register('confirmation')}
+              checked={confirmation}
+              onChange={(e) => setConfirmation(e.target.checked)}
               disabled={isSubmitting}
               className="mt-1 w-5 h-5 rounded border-input focus:ring-2 focus:ring-primary cursor-pointer"
             />
@@ -286,8 +287,8 @@ export default function FeedbackForm({
               I confirm that this feedback is honest, constructive, and respectful. I understand that while my identity is anonymous, my feedback will be visible to {targetUser.fullName}.
             </label>
           </div>
-          {errors.confirmation && (
-            <p className="text-sm text-destructive ml-8">{errors.confirmation.message}</p>
+          {!confirmation && error && (
+            <p className="text-sm text-destructive ml-8">Please confirm before submitting</p>
           )}
         </div>
 

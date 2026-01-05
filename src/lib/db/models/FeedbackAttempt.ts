@@ -274,11 +274,9 @@ FeedbackAttemptSchema.statics.getRecentAttemptsByIP = async function (
 FeedbackAttemptSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
-    delete ret.__v;
     // Keep fingerprint and ipHash hidden in JSON output for privacy
-    delete ret.fingerprint;
-    delete ret.ipHash;
-    return ret;
+    const { __v, fingerprint, ipHash, ...rest } = ret;
+    return rest;
   },
 });
 

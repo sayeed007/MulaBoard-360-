@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import Feedback from '@/lib/db/models/Feedback';
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Check authentication and admin role
     const user = await getCurrentUser();
 
-    if (!user || user.role !== 'admin') {
+    if (!user || !hasAdminRole(user.role)) {
       return NextResponse.json(
         {
           success: false,

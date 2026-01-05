@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
+import { Types } from 'mongoose';
 
 /**
  * PATCH /api/admin/feedbacks/[id]
@@ -10,13 +11,13 @@ import Feedback from '@/lib/db/models/Feedback';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -26,7 +27,7 @@ export async function PATCH(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { action, moderationNote } = body;
 
@@ -49,24 +50,21 @@ export async function PATCH(
     // Perform moderation action
     if (action === 'approve') {
       feedback.moderation.status = 'approved';
-      feedback.moderation.isApproved = true;
-      feedback.moderation.moderatedBy = currentUser.id;
+      feedback.moderation.moderatedBy = new Types.ObjectId(currentUser.id);
       feedback.moderation.moderatedAt = new Date();
       if (moderationNote) {
         feedback.moderation.moderationNote = moderationNote;
       }
     } else if (action === 'flag') {
       feedback.moderation.status = 'flagged';
-      feedback.moderation.isApproved = false;
-      feedback.moderation.moderatedBy = currentUser.id;
+      feedback.moderation.moderatedBy = new Types.ObjectId(currentUser.id);
       feedback.moderation.moderatedAt = new Date();
       if (moderationNote) {
         feedback.moderation.moderationNote = moderationNote;
       }
     } else if (action === 'reject') {
-      feedback.moderation.status = 'rejected';
-      feedback.moderation.isApproved = false;
-      feedback.moderation.moderatedBy = currentUser.id;
+      feedback.moderation.status = 'pending';
+      feedback.moderation.moderatedBy = new Types.ObjectId(currentUser.id);
       feedback.moderation.moderatedAt = new Date();
       if (moderationNote) {
         feedback.moderation.moderationNote = moderationNote;
@@ -104,7 +102,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
@@ -120,7 +118,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Connect to database
     await connectDB();

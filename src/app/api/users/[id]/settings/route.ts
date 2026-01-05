@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { updateSettingsSchema } from '@/validators/user';
@@ -11,7 +11,7 @@ import { updateSettingsSchema } from '@/validators/user';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -27,10 +27,10 @@ export async function PATCH(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Authorization: Users can only update their own settings, admins can update any
-    if (currentUser.id !== id && currentUser.role !== 'admin') {
+    if (currentUser.id !== id && !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -49,7 +49,7 @@ export async function PATCH(
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );
@@ -73,7 +73,9 @@ export async function PATCH(
 
     // Update settings
     const { isProfileActive } = validatedData.data;
-    user.isProfileActive = isProfileActive;
+    if (isProfileActive !== undefined) {
+      user.isProfileActive = isProfileActive;
+    }
 
     await user.save();
 

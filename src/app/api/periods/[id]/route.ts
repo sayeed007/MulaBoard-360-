@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import ReviewPeriod from '@/lib/db/models/ReviewPeriod';
-import { createPeriodSchema } from '@/validators/period';
+import { updatePeriodSchema } from '@/validators/period';
 
 /**
  * PATCH /api/periods/[id]
@@ -11,13 +11,13 @@ import { createPeriodSchema } from '@/validators/period';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -27,18 +27,18 @@ export async function PATCH(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Validate request body
-    const validatedData = createPeriodSchema.safeParse(body);
+    const validatedData = updatePeriodSchema.safeParse(body);
 
     if (!validatedData.success) {
       return NextResponse.json(
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );
@@ -60,34 +60,29 @@ export async function PATCH(
       );
     }
 
-    const { name, slug, startDate, endDate, theme } = validatedData.data;
+    const { name, startDate, endDate, themeName, themeEmoji, themeBackgroundColor, isActive } = validatedData.data;
 
-    // Check if slug already exists (excluding current period)
-    if (slug !== period.slug) {
-      const existingPeriod = await ReviewPeriod.findOne({ slug });
-      if (existingPeriod) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Slug already exists',
-          },
-          { status: 409 }
-        );
-      }
-    }
+    // Check if slug already exists (logic removed as slug update is not supported in schema)
 
     // If this should be active, deactivate all other periods
-    if (body.isActive && !period.isActive) {
+    if (isActive === true && !period.isActive) {
       await ReviewPeriod.updateMany({ _id: { $ne: id } }, { isActive: false });
     }
 
     // Update period
-    period.name = name;
-    period.slug = slug;
-    period.startDate = startDate;
-    period.endDate = endDate;
-    period.isActive = body.isActive !== undefined ? body.isActive : period.isActive;
-    period.theme = theme || period.theme;
+    if (name) period.name = name;
+    if (startDate) period.startDate = new Date(startDate);
+    if (endDate) period.endDate = new Date(endDate);
+    if (isActive !== undefined) period.isActive = isActive;
+
+    // Update theme if any theme field is provided
+    if (themeName || themeEmoji || themeBackgroundColor) {
+      period.theme = {
+        name: themeName || period.theme.name,
+        primaryEmoji: themeEmoji || period.theme.primaryEmoji,
+        backgroundColor: themeBackgroundColor || period.theme.backgroundColor || '#f0fdf4',
+      };
+    }
 
     await period.save();
 
@@ -120,13 +115,13 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -136,7 +131,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Connect to database
     await connectDB();

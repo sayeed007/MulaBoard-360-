@@ -102,8 +102,9 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 // Update Settings Schema
 export const updateSettingsSchema = z.object({
-  emailNotifications: z.boolean(),
-  showAggregatePublicly: z.boolean(),
+  isProfileActive: z.boolean().optional(),
+  emailNotifications: z.boolean().optional(),
+  showAggregatePublicly: z.boolean().optional(),
 });
 
 export type UpdateSettingsInput = z.infer<typeof updateSettingsSchema>;

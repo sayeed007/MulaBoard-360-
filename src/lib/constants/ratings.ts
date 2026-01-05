@@ -44,34 +44,34 @@ export const MULA_RATINGS = {
  */
 export const RATING_CATEGORIES = [
   {
+    key: 'workQuality',
+    label: 'Work Quality',
+    description: 'How well does this person deliver quality work?',
+    emoji: '⭐',
+  },
+  {
     key: 'communication',
     label: 'Communication Skills',
     description: 'How well does this person communicate?',
     emoji: '💬',
   },
   {
-    key: 'teamwork',
-    label: 'Teamwork & Collaboration',
+    key: 'teamBehavior',
+    label: 'Team Behavior',
     description: 'How well do they work with others?',
     emoji: '🤝',
   },
   {
-    key: 'technical',
-    label: 'Technical Skills',
-    description: 'How strong are their technical abilities?',
-    emoji: '⚙️',
+    key: 'accountability',
+    label: 'Accountability',
+    description: 'How accountable and reliable are they?',
+    emoji: '✅',
   },
   {
-    key: 'problemSolving',
-    label: 'Problem Solving',
-    description: 'How effective are they at solving problems?',
-    emoji: '🧩',
-  },
-  {
-    key: 'attitude',
-    label: 'Work Attitude & Initiative',
-    description: 'How positive and proactive are they?',
-    emoji: '🚀',
+    key: 'overall',
+    label: 'Overall Performance',
+    description: 'Overall assessment of their performance',
+    emoji: '🎯',
   },
 ] as const;
 

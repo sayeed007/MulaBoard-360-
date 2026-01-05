@@ -9,7 +9,12 @@
       "Bash(timeout 10 npm run dev)",
       "Bash(npm uninstall:*)",
       "Bash(timeout 15 npm run dev)",
-      "Bash(npm run seed:admin:*)"
+      "Bash(npm run seed:admin:*)",
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)"
     ]
   }
 }

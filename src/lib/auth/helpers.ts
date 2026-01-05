@@ -42,6 +42,15 @@ export async function isAdmin() {
 }
 
 /**
+ * Check if user has admin privileges (admin)
+ * @param role User role to check
+ * @returns true if role has admin privileges
+ */
+export function hasAdminRole(role?: string) {
+  return role === 'admin';
+}
+
+/**
  * Check if user is employee (server-side)
  * @returns true if employee, false otherwise
  */

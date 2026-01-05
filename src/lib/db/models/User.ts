@@ -201,10 +201,10 @@ UserSchema.methods.comparePassword = async function (
 /**
  * Indexes for performance optimization
  */
-UserSchema.index({ email: 1 }); // Already defined as unique
-UserSchema.index({ publicSlug: 1 }); // Already defined as unique
-UserSchema.index({ role: 1 });
-UserSchema.index({ isProfileActive: 1 });
+// UserSchema.index({ email: 1 }); // Already defined as unique
+// UserSchema.index({ publicSlug: 1 }); // Already defined as unique
+// UserSchema.index({ role: 1 }); // Already defined as index: true
+// UserSchema.index({ isProfileActive: 1 }); // Already defined as index: true
 UserSchema.index({ department: 1 }); // For filtering by department
 UserSchema.index({ createdAt: -1 }); // For sorting by registration date
 
@@ -222,9 +222,8 @@ UserSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
     // Remove sensitive fields from JSON output
-    delete ret.password;
-    delete ret.__v;
-    return ret;
+    const { password, __v, ...rest } = ret;
+    return rest;
   },
 });
 

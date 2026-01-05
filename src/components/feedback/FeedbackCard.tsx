@@ -22,6 +22,12 @@ export default function FeedbackCard({
   onToggleVisibility,
   onReaction,
 }: FeedbackCardProps) {
+  // Calculate average score from ratings
+  const averageScore = RATING_CATEGORIES.reduce((sum, cat) => {
+    const rating = feedback.ratings[cat.key as keyof typeof feedback.ratings];
+    return sum + (rating?.score || 0);
+  }, 0) / RATING_CATEGORIES.length;
+
   return (
     <div className="bg-card rounded-lg shadow-lg p-6 border space-y-6">
       {/* Header */}
@@ -68,7 +74,7 @@ export default function FeedbackCard({
           <div className="flex items-center justify-between">
             <span className="font-semibold">Average Score</span>
             <span className="text-xl font-bold text-primary">
-              {feedback.averageScore?.toFixed(2) || 'N/A'} / 5.00
+              {averageScore.toFixed(2)} / 5.00
             </span>
           </div>
         </div>

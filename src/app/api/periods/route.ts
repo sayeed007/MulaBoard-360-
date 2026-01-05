@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import ReviewPeriod from '@/lib/db/models/ReviewPeriod';
 import { createPeriodSchema } from '@/validators/period';
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     // Check authentication and admin role
     const currentUser = await getCurrentUser();
 
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || !hasAdminRole(currentUser.role)) {
       return NextResponse.json(
         {
           success: false,
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     // Connect to database
     await connectDB();
 
-    const { name, slug, startDate, endDate, theme } = validatedData.data;
+    const { name, slug, startDate, endDate, themeName, themeEmoji, themeBackgroundColor, isActive } = validatedData.data;
 
     // Check if slug already exists
     const existingPeriod = await ReviewPeriod.findOne({ slug });
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // If this should be active, deactivate all other periods
-    if (body.isActive) {
+    if (isActive) {
       await ReviewPeriod.updateMany({}, { isActive: false });
     }
 
@@ -111,11 +111,11 @@ export async function POST(request: NextRequest) {
       slug,
       startDate,
       endDate,
-      isActive: body.isActive || false,
-      theme: theme || {
-        name: 'default',
-        primaryEmoji: '📊',
-        backgroundColor: '#F3F4F6',
+      isActive,
+      theme: {
+        name: themeName,
+        primaryEmoji: themeEmoji,
+        backgroundColor: themeBackgroundColor,
       },
     });
 

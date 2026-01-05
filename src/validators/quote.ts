@@ -22,12 +22,12 @@ export const createQuoteSchema = z.object({
   category: z.enum(
     ['landing', 'feedback_form', 'success', 'profile', 'admin', 'error', 'loading'],
     {
-      errorMap: () => ({ message: 'Invalid quote category' }),
+      message: 'Invalid quote category',
     }
   ),
 
   mood: z.enum(['funny', 'motivational', 'sarcastic', 'wise'], {
-    errorMap: () => ({ message: 'Invalid quote mood' }),
+    message: 'Invalid quote mood',
   }),
 
   isActive: z.boolean().optional().default(true),
@@ -53,13 +53,13 @@ export const updateQuoteSchema = z.object({
 
   category: z
     .enum(['landing', 'feedback_form', 'success', 'profile', 'admin', 'error', 'loading'], {
-      errorMap: () => ({ message: 'Invalid quote category' }),
+      message: 'Invalid quote category',
     })
     .optional(),
 
   mood: z
     .enum(['funny', 'motivational', 'sarcastic', 'wise'], {
-      errorMap: () => ({ message: 'Invalid quote mood' }),
+      message: 'Invalid quote mood',
     })
     .optional(),
 
@@ -73,13 +73,13 @@ export const getRandomQuoteSchema = z.object({
   category: z.enum(
     ['landing', 'feedback_form', 'success', 'profile', 'admin', 'error', 'loading'],
     {
-      errorMap: () => ({ message: 'Invalid quote category' }),
+      message: 'Invalid quote category',
     }
   ),
 
   mood: z
     .enum(['funny', 'motivational', 'sarcastic', 'wise'], {
-      errorMap: () => ({ message: 'Invalid quote mood' }),
+      message: 'Invalid quote mood',
     })
     .optional(),
 });

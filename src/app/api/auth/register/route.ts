@@ -3,6 +3,7 @@ import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { registerSchema } from '@/validators/user';
 import { generateSlug, generateUniqueSlug } from '@/lib/utils/slug';
+import { sendNewUserNotificationToAdmin } from '@/lib/email/service';
 
 /**
  * POST /api/auth/register
@@ -91,6 +92,20 @@ export async function POST(request: NextRequest) {
         showAggregatePublicly: false,
       },
     });
+
+    // Send notification to admin
+    try {
+      await sendNewUserNotificationToAdmin({
+        fullName: user.fullName,
+        email: user.email,
+        designation: user.designation,
+        department: user.department,
+        createdAt: user.createdAt,
+      });
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     // Return success response (without password)
     return NextResponse.json(

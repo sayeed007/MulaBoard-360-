@@ -4,12 +4,7 @@ import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { getCurrentUser } from '@/lib/auth/helpers';
 import type { Metadata } from 'next';
-
-/**
- * Public Profile Page
- *
- * Displays a user's public profile based on their unique slug
- */
+import { Button } from '@/components/ui';
 
 interface PublicProfilePageProps {
   params: {
@@ -66,126 +61,151 @@ export default async function PublicProfilePage({
   const isOwnProfile = currentUser?.id === profileUser._id.toString();
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b">
-        <div className="max-w-5xl mx-auto px-8 py-12">
-          <div className="flex items-start justify-between">
-            <div className="flex gap-6 items-start">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100 via-background to-background dark:from-indigo-950 dark:to-background pb-20">
+
+      {/* Decorated Header Background */}
+      <div className="h-64 bg-gradient-to-r from-primary/20 via-primary/5 to-background relative overflow-hidden">
+        <div className="absolute top-10 left-10 text-9xl opacity-10 animate-pulse">🌿</div>
+        <div className="absolute bottom-[-10px] right-20 text-9xl opacity-10 animate-bounce-gentle" style={{ animationDelay: '1s' }}>🥕</div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-32 relative z-10">
+        <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-white/20 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-xl animate-slide-up">
+
+          <div className="p-8 md:p-12">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
               {/* Profile Image */}
               <div className="flex-shrink-0">
-                {profileUser.profileImage ? (
-                  <img
-                    src={profileUser.profileImage}
-                    alt={profileUser.fullName}
-                    className="w-32 h-32 rounded-full object-cover border-4 border-background shadow-lg"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center text-5xl font-bold border-4 border-background shadow-lg">
-                    {profileUser.fullName.charAt(0)}
-                  </div>
-                )}
+                <div className="w-40 h-40 rounded-full p-1 bg-gradient-to-br from-primary via-purple-500 to-pink-500 shadow-lg">
+                  {profileUser.profileImage ? (
+                    <img
+                      src={profileUser.profileImage}
+                      alt={profileUser.fullName}
+                      className="w-full h-full rounded-full object-cover border-4 border-background bg-background"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-6xl font-bold text-primary border-4 border-background">
+                      {profileUser.fullName.charAt(0)}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Profile Info */}
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold mb-2">
+              <div className="flex-1 text-center md:text-left space-y-2">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                   {profileUser.fullName}
                 </h1>
-                <p className="text-xl text-muted-foreground mb-1">
-                  {profileUser.designation}
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  {profileUser.department}
-                </p>
+                <div className="flex flex-wrap justify-center md:justify-start gap-3 text-muted-foreground text-lg font-medium">
+                  <span className="flex items-center gap-1">
+                    💼 {profileUser.designation}
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-border self-center hidden md:block"></span>
+                  <span className="flex items-center gap-1">
+                    🏢 {profileUser.department}
+                  </span>
+                </div>
 
                 {profileUser.bio && (
-                  <p className="mt-4 text-muted-foreground max-w-2xl">
-                    {profileUser.bio}
+                  <p className="pt-4 text-muted-foreground text-lg max-w-2xl leading-relaxed">
+                    &quot;{profileUser.bio}&quot;
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                  {isOwnProfile ? (
+                    <Link href="/profile">
+                      <Button variant="secondary" size="lg" className="shadow-sm">
+                        Edit Profile
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href={`/feedback/submit?to=${slug}`}>
+                      <Button variant="primary" size="lg" className="shadow-lg shadow-primary/25 animate-pulse-slow">
+                        Give Anonymous Feedback 🤫
+                      </Button>
+                    </Link>
+                  )}
+                  <Link href="/dashboard">
+                    <Button variant="outline" size="lg">
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+
+          {/* Stats Card - Placeholder */}
+          <div className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-sm md:col-span-1">
+            <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span>📊</span> Feedback Stats
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-background/80 rounded-xl p-5 text-center border border-border/50">
+                <div className="text-4xl mb-2 opacity-50">🏆</div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Mula Score</p>
+                <p className="text-xl font-bold">Hidden</p>
+              </div>
+              <div className="bg-background/80 rounded-xl p-5 text-center border border-border/50">
+                <div className="text-4xl mb-2 opacity-50">💬</div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Received</p>
+                <p className="text-xl font-bold">--</p>
+              </div>
+            </div>
+            <p className="text-xs text-center text-muted-foreground mt-4 italic">
+              Detailed stats are private to the user.
+            </p>
+          </div>
+
+          {/* Recent Feedback & Placeholder */}
+          <div className="md:col-span-2 space-y-8">
+            <div className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-sm text-center">
+              <div className="max-w-md mx-auto py-8">
+                <div className="text-6xl mb-6 animate-bounce-gentle">✨</div>
+                <h3 className="text-2xl font-bold mb-2">Anonymous Feedback</h3>
+                <p className="text-muted-foreground mb-8 text-lg">
+                  Help {profileUser.fullName} grow by providing honest, constructive feedback. Use the Mula Rating System!
+                </p>
+
+                {!isOwnProfile && (
+                  <div className="grid grid-cols-3 gap-4 mb-8 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                    <div className="text-center">
+                      <div className="text-4xl mb-1">🌿</div>
+                      <div className="text-xs font-bold">Golden Mula</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-4xl mb-1">🥕</div>
+                      <div className="text-xs font-bold">Fresh Carrot</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-4xl mb-1">🍅</div>
+                      <div className="text-xs font-bold">Rotten Tomato</div>
+                    </div>
+                  </div>
+                )}
+
+                {!isOwnProfile ? (
+                  <Link href={`/feedback/submit?to=${slug}`}>
+                    <Button variant="primary" size="lg" className="w-full sm:w-auto">
+                      Give Feedback Now
+                    </Button>
+                  </Link>
+                ) : (
+                  <p className="bg-secondary/50 p-4 rounded-xl text-sm border border-secondary text-secondary-foreground font-medium">
+                    Share your profile link to start collecting feedback!
                   </p>
                 )}
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              {isOwnProfile ? (
-                <Link
-                  href="/profile"
-                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-                >
-                  Edit Profile
-                </Link>
-              ) : (
-                <Link
-                  href={`/feedback/submit?to=${slug}`}
-                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  Give Feedback
-                </Link>
-              )}
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-              >
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Stats Card - Coming Soon */}
-          <div className="bg-card rounded-lg shadow-lg p-6 border">
-            <h2 className="text-lg font-bold mb-4">Feedback Stats</h2>
-            <div className="space-y-3 text-center">
-              <div className="bg-muted/50 rounded-lg p-4">
-                <div className="text-3xl mb-1">🏆</div>
-                <p className="text-sm text-muted-foreground">Mula Rating</p>
-                <p className="text-lg font-bold">Coming Soon</p>
-              </div>
-              <div className="bg-muted/50 rounded-lg p-4">
-                <div className="text-3xl mb-1">📊</div>
-                <p className="text-sm text-muted-foreground">
-                  Total Feedback Received
-                </p>
-                <p className="text-lg font-bold">-</p>
-              </div>
-            </div>
           </div>
 
-          {/* Recent Feedback - Coming Soon */}
-          <div className="md:col-span-2 bg-card rounded-lg shadow-lg p-6 border">
-            <h2 className="text-lg font-bold mb-4">Recent Feedback</h2>
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">💬</div>
-              <p className="text-muted-foreground">
-                Feedback history will be available in Phase 5
-              </p>
-              {!isOwnProfile && (
-                <Link
-                  href={`/feedback/submit?to=${slug}`}
-                  className="inline-block mt-4 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  Be the first to give feedback!
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Achievements - Coming Soon */}
-        <div className="mt-8 bg-card rounded-lg shadow-lg p-6 border">
-          <h2 className="text-lg font-bold mb-4">Achievements & Badges</h2>
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🎖️</div>
-            <p className="text-muted-foreground">
-              Achievement badges will be available in Phase 7
-            </p>
-          </div>
         </div>
       </div>
     </div>

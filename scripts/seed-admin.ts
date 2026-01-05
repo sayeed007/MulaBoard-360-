@@ -53,6 +53,8 @@ async function seedAdmin() {
       publicSlug: 'admin',
       role: 'admin',
       isProfileActive: true,
+      accountStatus: 'approved',
+      approvedAt: new Date(),
     });
 
     console.log('\n✅ Admin user created successfully!\n');

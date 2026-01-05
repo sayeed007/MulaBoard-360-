@@ -16,6 +16,8 @@ export {
 } from './Card';
 export { Input, type InputProps } from './Input';
 export { Textarea, type TextareaProps } from './Textarea';
+export * from './Logo';
 export { Badge, type BadgeProps, type BadgeVariant } from './Badge';
 export { Alert, type AlertProps, type AlertVariant } from './Alert';
+export { default as Switch } from './Switch';
 export { Loading, type LoadingProps, type LoadingSize } from './Loading';

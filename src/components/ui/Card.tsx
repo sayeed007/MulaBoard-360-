@@ -42,12 +42,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const baseStyles = 'rounded-lg transition-all';
+    const baseStyles = 'rounded-xl transition-all border bg-card text-card-foreground shadow-sm';
 
     const variantStyles: Record<string, string> = {
-      default: 'bg-card border',
-      outlined: 'bg-transparent border-2',
-      elevated: 'bg-card shadow-lg',
+      default: '',
+      outlined: 'bg-transparent border-2 shadow-none',
+      elevated: 'shadow-lg border-none',
     };
 
     const paddingStyles: Record<string, string> = {

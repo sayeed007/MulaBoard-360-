@@ -70,7 +70,7 @@ export type FeedbackSubmissionInput = z.infer<typeof feedbackSubmissionSchema>;
 // Feedback Update Schema (for employees to update their received feedback)
 export const updateFeedbackVisibilitySchema = z.object({
   visibility: z.enum(['private', 'public'], {
-    errorMap: () => ({ message: 'Visibility must be either private or public' }),
+    message: 'Visibility must be either private or public',
   }),
 });
 
@@ -79,7 +79,7 @@ export type UpdateFeedbackVisibilityInput = z.infer<typeof updateFeedbackVisibil
 // Employee Reaction Schema
 export const updateFeedbackReactionSchema = z.object({
   reaction: z.enum(['thanks', 'noted', 'ouch', 'fair_enough'], {
-    errorMap: () => ({ message: 'Invalid reaction type' }),
+    message: 'Invalid reaction type',
   }),
 });
 
@@ -88,7 +88,7 @@ export type UpdateFeedbackReactionInput = z.infer<typeof updateFeedbackReactionS
 // Feedback Moderation Schema (for admins)
 export const moderateFeedbackSchema = z.object({
   status: z.enum(['pending', 'approved', 'flagged'], {
-    errorMap: () => ({ message: 'Invalid moderation status' }),
+    message: 'Invalid moderation status',
   }),
 
   moderationNote: z

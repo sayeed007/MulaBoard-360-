@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Validation failed',
-          details: validatedData.error.errors,
+          details: validatedData.error.issues,
         },
         { status: 400 }
       );
@@ -148,7 +148,6 @@ export async function POST(request: NextRequest) {
 
     // 9. Calculate Mula rating
     const mulaRating = calculateMulaRatingFromRatings(validatedData.data.ratings);
-    const averageScore = calculateAverageScore(validatedData.data.ratings);
 
     // 10. Create feedback
     const feedback = await Feedback.create({
@@ -163,11 +162,9 @@ export async function POST(request: NextRequest) {
       strengths: validatedData.data.strengths,
       improvements: validatedData.data.improvements,
       mulaRating,
-      averageScore,
       visibility: 'private', // Default to private, user can change later
       moderation: {
         status: 'pending',
-        isApproved: false,
       },
     });
 
@@ -188,7 +185,6 @@ export async function POST(request: NextRequest) {
         data: {
           id: feedback._id,
           mulaRating,
-          averageScore,
         },
       },
       { status: 201 }

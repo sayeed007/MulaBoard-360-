@@ -14,6 +14,8 @@ declare module 'next-auth' {
     name: string;
     role: 'employee' | 'admin';
     image?: string | null;
+    publicSlug: string;
+    isProfileActive: boolean;
   }
 
   interface Session {
@@ -23,6 +25,8 @@ declare module 'next-auth' {
       name: string;
       role: 'employee' | 'admin';
       image?: string | null;
+      publicSlug: string;
+      isProfileActive: boolean;
     };
   }
 }
@@ -33,5 +37,7 @@ declare module 'next-auth/jwt' {
     email: string;
     name: string;
     role: 'employee' | 'admin';
+    publicSlug: string;
+    isProfileActive: boolean;
   }
 }

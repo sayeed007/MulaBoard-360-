@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/auth/helpers';
+import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import Link from 'next/link';
+import { Logo } from '@/components/ui';
+import AdminNavLink from '@/components/layout/AdminNavLink';
+import AdminMobileMenu from '@/components/layout/AdminMobileMenu';
 
 /**
  * Admin Layout
@@ -20,7 +23,7 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  if (user.role !== 'admin') {
+  if (!hasAdminRole(user.role)) {
     redirect('/dashboard');
   }
 
@@ -28,59 +31,42 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-muted/30">
       {/* Admin Header */}
       <header className="bg-card border-b sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <Link href="/admin" className="flex items-center gap-2">
-                <span className="text-2xl">👨‍💼</span>
-                <h1 className="text-xl font-bold">Admin Panel</h1>
+                <Logo size={48} />
+                <h1 className="text-lg sm:text-xl font-bold">Admin Panel</h1>
               </Link>
 
-              {/* Admin Navigation */}
-              <nav className="hidden md:flex items-center gap-4">
-                <Link
-                  href="/admin"
-                  className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/admin/users"
-                  className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Users
-                </Link>
-                <Link
-                  href="/admin/feedbacks"
-                  className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Feedbacks
-                </Link>
-                <Link
-                  href="/admin/periods"
-                  className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Periods
-                </Link>
-                <Link
-                  href="/admin/quotes"
-                  className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors"
-                >
-                  Quotes
-                </Link>
+              {/* Admin Navigation - Desktop */}
+              <nav className="hidden md:flex items-center gap-2">
+                <AdminNavLink href="/admin">Dashboard</AdminNavLink>
+                <AdminNavLink href="/admin/users">Users</AdminNavLink>
+                <AdminNavLink href="/admin/users/pending">Pending</AdminNavLink>
+                <AdminNavLink href="/admin/feedbacks">Feedbacks</AdminNavLink>
+                <AdminNavLink href="/admin/periods">Periods</AdminNavLink>
+                <AdminNavLink href="/admin/quotes">Quotes</AdminNavLink>
               </nav>
             </div>
 
-            {/* User Info */}
-            <div className="flex items-center gap-4">
+            {/* Right Side - User Info & Mobile Menu */}
+            <div className="flex items-center gap-2">
+              {/* Mobile Menu Button */}
+              <AdminMobileMenu
+                userName={user.name}
+                userInitial={user.name.charAt(0)}
+              />
+
+              {/* Desktop Actions */}
               <Link
                 href="/dashboard"
-                className="px-3 py-2 text-sm font-medium bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+                className="hidden md:block px-3 py-2 text-sm font-medium bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
               >
                 Back to Dashboard
               </Link>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold">
+              <div className="hidden md:flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full border border-primary bg-primary/20 flex items-center justify-center text-sm font-bold">
                   {user.name.charAt(0)}
                 </div>
                 <div className="hidden sm:block">
@@ -94,7 +80,7 @@ export default async function AdminLayout({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">{children}</main>
     </div>
   );
 }
