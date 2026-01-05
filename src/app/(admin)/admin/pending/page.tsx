@@ -29,8 +29,8 @@ export default async function PendingUsersPage() {
   const users = pendingUsers.map((user) => ({
     ...user,
     _id: user._id.toString(),
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
+    createdAt: user?.createdAt?.toISOString(),
+    updatedAt: user?.updatedAt?.toISOString(),
   }));
 
   return (

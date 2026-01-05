@@ -76,7 +76,7 @@ export async function sendNewUserNotificationToAdmin(user: {
     return { success: false, error: 'Admin email not configured' };
   }
 
-  const approvalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/users/pending`;
+  const approvalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/pending`;
 
   const html = `
     <!DOCTYPE html>

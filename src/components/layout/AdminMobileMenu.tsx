@@ -22,7 +22,7 @@ export default function AdminMobileMenu({ userName, userInitial }: AdminMobileMe
     const links: MobileMenuLink[] = [
         { href: '/admin', label: 'Dashboard' },
         { href: '/admin/users', label: 'Users' },
-        { href: '/admin/users/pending', label: 'Pending' },
+        { href: '/admin/pending', label: 'Pending' },
         { href: '/admin/feedbacks', label: 'Feedbacks' },
         { href: '/admin/periods', label: 'Periods' },
         { href: '/admin/quotes', label: 'Quotes' },
@@ -71,8 +71,8 @@ export default function AdminMobileMenu({ userName, userInitial }: AdminMobileMe
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
                                     className={`block px-4 py-3 rounded-lg font-medium transition-colors ${isActive(link.href)
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'hover:bg-muted'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-muted'
                                         }`}
                                 >
                                     {link.label}

@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
             title="Pending Approvals"
             description="Approve or reject new user registrations"
             icon="✅"
-            href="/admin/users/pending"
+            href="/admin/pending"
             color="text-yellow-500"
             badge
           />

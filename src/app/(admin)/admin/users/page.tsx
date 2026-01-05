@@ -26,35 +26,24 @@ export default async function AdminUsersPage() {
         .lean();
 
     return (
-        <div className="space-y-8 animate-slide-up">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-2xl p-8 border border-white/20 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <Link href="/admin" className="text-muted-foreground hover:text-primary transition-colors">
-                            Admin Dashboard
-                        </Link>
-                        <span className="text-muted-foreground">/</span>
-                        <span className="font-semibold">Users</span>
-                    </div>
-                    <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">
-                        User Management
-                    </h1>
+                    <h1 className="text-3xl font-bold mb-2">User Management</h1>
                     <p className="text-muted-foreground">
-                        View and manage {users.length} registered employees.
+                        View and manage {users.length} registered employees
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <Link href="/admin/users/invite">
-                        <Button variant="primary">
-                            + Invite User
-                        </Button>
-                    </Link>
-                </div>
+                <Link href="/admin/pending">
+                    <Button variant="outline">
+                        View Pending
+                    </Button>
+                </Link>
             </div>
 
             {/* Users Table */}
-            <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-2xl border border-white/20 dark:border-zinc-800 shadow-sm overflow-hidden">
+            <div className="bg-card border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-muted/50 text-muted-foreground uppercase tracking-wider font-semibold">

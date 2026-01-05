@@ -17,6 +17,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isEditMode, setIsEditMode] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +28,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -108,6 +110,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
       setSuccess('Profile updated successfully!');
       setIsLoading(false);
+      setIsEditMode(false);
 
       // Refresh the page to show updated data
       setTimeout(() => {
@@ -119,18 +122,84 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     }
   };
 
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setError('');
+    setSuccess('');
+    setPreviewImage(user.profileImage || '');
+    reset();
+  };
+
+  // View Mode
+  if (!isEditMode) {
+    return (
+      <div className="w-full max-w-2xl space-y-6">
+        {success && (
+          <Alert variant="success" title="Success">
+            {success}
+          </Alert>
+        )}
+
+        {/* Profile Display */}
+        <div className="space-y-6">
+          {/* Profile Image */}
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm">
+              {user.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center text-4xl text-muted-foreground/50">
+                  {user?.fullName?.charAt(0)}
+                </div>
+              )}
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">{user.fullName}</h3>
+              <p className="text-muted-foreground">{user.designation}</p>
+            </div>
+          </div>
+
+          {/* Profile Info */}
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Department</label>
+              <p className="text-lg mt-1">{user.department}</p>
+            </div>
+
+            {user.bio && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Bio</label>
+                <p className="text-base mt-1 leading-relaxed">{user.bio}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Edit Button */}
+          <div className="pt-4">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => setIsEditMode(true)}
+            >
+              Edit Profile
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Edit Mode
   return (
     <div className="w-full max-w-2xl space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {error && (
           <Alert variant="danger" title="Error">
             {error}
-          </Alert>
-        )}
-
-        {success && (
-          <Alert variant="success" title="Success">
-            {success}
           </Alert>
         )}
 
@@ -232,7 +301,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           />
         </div>
 
-        <div className="pt-4 flex justify-end">
+        <div className="pt-4 flex gap-3">
           <Button
             type="submit"
             variant="primary"
@@ -240,6 +309,15 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             isLoading={isLoading || isUploadingImage}
           >
             Save Changes
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={handleCancel}
+            disabled={isLoading || isUploadingImage}
+          >
+            Cancel
           </Button>
         </div>
       </form>

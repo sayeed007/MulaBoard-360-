@@ -54,7 +54,7 @@ export default function NavbarClient({ user, isAdmin, pendingCount }: NavbarProp
                                 </Button>
                             </Link>
                             {pendingCount > 0 && (
-                                <Link href="/admin/users/pending" className="relative">
+                                <Link href="/admin/pending" className="relative">
                                     <Button variant="outline" size="sm" className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
                                         <span className="mr-1">✅</span>
                                         <span className="hidden sm:inline">Pending</span>
@@ -80,14 +80,14 @@ export default function NavbarClient({ user, isAdmin, pendingCount }: NavbarProp
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 border border-red-500 text-red-500"
                             onClick={handleSignOut}
                         >
                             Sign Out
                         </Button>
 
                         <Link href="/profile" className="flex-shrink-0">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-background shadow-sm hover:scale-105 transition-transform">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-background shadow-sm hover:scale-105 transition-transform border border-primary">
                                 {user.image ? (
                                     <img src={user.image} alt={user.name} className="w-full h-full rounded-full object-cover" />
                                 ) : (

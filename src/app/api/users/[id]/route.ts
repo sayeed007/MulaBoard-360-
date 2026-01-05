@@ -78,7 +78,8 @@ export async function PATCH(
     user.designation = designation;
     user.department = department;
     user.bio = bio || user.bio;
-    if (profileImage) {
+    // Always update profileImage if it's defined in the request (including empty string to clear it)
+    if (profileImage !== undefined) {
       user.profileImage = profileImage;
     }
 

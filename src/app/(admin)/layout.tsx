@@ -43,7 +43,7 @@ export default async function AdminLayout({
               <nav className="hidden md:flex items-center gap-2">
                 <AdminNavLink href="/admin">Dashboard</AdminNavLink>
                 <AdminNavLink href="/admin/users">Users</AdminNavLink>
-                <AdminNavLink href="/admin/users/pending">Pending</AdminNavLink>
+                <AdminNavLink href="/admin/pending">Pending</AdminNavLink>
                 <AdminNavLink href="/admin/feedbacks">Feedbacks</AdminNavLink>
                 <AdminNavLink href="/admin/periods">Periods</AdminNavLink>
                 <AdminNavLink href="/admin/quotes">Quotes</AdminNavLink>

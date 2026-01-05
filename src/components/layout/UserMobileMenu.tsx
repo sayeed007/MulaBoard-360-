@@ -96,8 +96,8 @@ export default function UserMobileMenu({
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
                                     className={`block px-4 py-3 rounded-lg font-medium transition-colors ${isActive(link.href)
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'hover:bg-muted'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-muted'
                                         }`}
                                 >
                                     {link.label}
@@ -117,7 +117,7 @@ export default function UserMobileMenu({
 
                                     {pendingCount > 0 && (
                                         <Link
-                                            href="/admin/users/pending"
+                                            href="/admin/pending"
                                             onClick={() => setIsOpen(false)}
                                             className="block px-4 py-3 rounded-lg font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 hover:bg-yellow-200 dark:hover:bg-yellow-900/30 transition-colors"
                                         >
