@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
 import { loginSchema } from '@/validators/user';
@@ -14,6 +14,15 @@ import User from '@/lib/db/models/User';
  * This full instance includes Node.js-specific providers (like Mongoose).
  * For the Edge-compatible version used in Middleware, refer to auth.config.ts.
  */
+
+// Custom error class for specific login errors
+class CustomCredentialsSignin extends CredentialsSignin {
+    code: string;
+    constructor(code: string) {
+        super();
+        this.code = code;
+    }
+}
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
     ...authConfig,
@@ -32,7 +41,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
                     if (!validatedFields.success) {
                         console.error('Invalid credentials format');
-                        return null;
+                        throw new CustomCredentialsSignin('invalid_credentials');
                     }
 
                     const { email, password } = validatedFields.data;
@@ -45,13 +54,24 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
                     if (!user) {
                         console.error('User not found');
-                        return null;
+                        throw new CustomCredentialsSignin('invalid_credentials');
+                    }
+
+                    // Check account status
+                    if (user.accountStatus === 'pending') {
+                        console.error('User account pending approval');
+                        throw new CustomCredentialsSignin('pending_approval');
+                    }
+
+                    if (user.accountStatus === 'rejected') {
+                        console.error('User account rejected');
+                        throw new CustomCredentialsSignin('rejected');
                     }
 
                     // Check if profile is active
                     if (!user.isProfileActive) {
                         console.error('User profile is inactive');
-                        return null;
+                        throw new CustomCredentialsSignin('inactive_profile');
                     }
 
                     // Compare password
@@ -59,7 +79,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
                     if (!isPasswordValid) {
                         console.error('Invalid password');
-                        return null;
+                        throw new CustomCredentialsSignin('invalid_credentials');
                     }
 
                     // Return user object (password will be excluded by toJSON)
@@ -74,7 +94,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                     };
                 } catch (error) {
                     console.error('Error during authentication:', error);
-                    return null;
+                    // Re-throw the error to preserve the error code
+                    if (error instanceof CustomCredentialsSignin) {
+                        throw error;
+                    }
+                    throw new CustomCredentialsSignin('invalid_credentials');
                 }
             },
         }),

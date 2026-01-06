@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@/validators/user';
 import Link from 'next/link';
 import { Button, Input, Alert } from '@/components/ui';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -15,10 +16,30 @@ export default function LoginForm() {
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
       setSuccessMessage('Registration successful! Your account is pending admin approval. You will receive an email once approved.');
+    }
+
+    // Check for error in URL params (from NextAuth redirect)
+    const errorParam = searchParams.get('error');
+    if (errorParam && errorParam !== 'CredentialsSignin') {
+      switch (errorParam) {
+        case 'pending_approval':
+          setError('Your account is pending admin approval. You will receive an email once approved.');
+          break;
+        case 'inactive_profile':
+          setError('Your account is inactive. Please contact support.');
+          break;
+        case 'rejected':
+          setError('Your account has been rejected by an admin.');
+          break;
+        case 'invalid_credentials':
+          setError('ID or Password incorrect.');
+          break;
+      }
     }
   }, [searchParams]);
 
@@ -41,23 +62,27 @@ export default function LoginForm() {
         redirect: false,
       });
 
+      console.log(result)
       if (result?.error) {
-        switch (result.error) {
+        // Check the code property for custom error codes
+        const errorCode = (result as any).code || result.error;
+
+        switch (errorCode) {
           case 'pending_approval':
             setError('Your account is pending admin approval. You will receive an email once approved.');
             break;
           case 'inactive_profile':
             setError('Your account is inactive. Please contact support.');
             break;
-          case 'CredentialsSignin':
-            // Fallback for generic credential errors
-            setError('Invalid email or password.');
+          case 'rejected':
+            setError('Your account has been rejected by an admin.');
             break;
           case 'invalid_credentials':
             setError('ID or Password incorrect.');
             break;
-          case 'rejected':
-            setError('Your account has been rejected by an admin.');
+          case 'CredentialsSignin':
+            // Fallback for generic credential errors
+            setError('Invalid email or password.');
             break;
           default:
             setError('Login failed. Please try again.');
@@ -116,16 +141,30 @@ export default function LoginForm() {
             {...register('email')}
           />
 
-          <Input
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            error={errors.password?.message}
-            fullWidth
-            {...register('password')}
-          />
+          <div className="relative">
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              id="password"
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              error={errors.password?.message}
+              fullWidth
+              {...register('password')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-muted-foreground hover:text-foreground transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <EyeOff size={20} />
+              ) : (
+                <Eye size={20} />
+              )}
+            </button>
+          </div>
         </div>
 
         <Button
