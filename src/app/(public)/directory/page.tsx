@@ -30,7 +30,7 @@ async function DirectoryContent({ searchParams }: DirectoryPageProps) {
     const department = params.department || '';
     const sort = params.sort || 'newest';
 
-    // Build API URL - use relative path to work in both dev and production
+    // Build API URL - use absolute URL for Server Components
     const apiParams = new URLSearchParams();
     apiParams.set('page', page);
     apiParams.set('limit', '12');
@@ -38,7 +38,11 @@ async function DirectoryContent({ searchParams }: DirectoryPageProps) {
     if (department) apiParams.set('department', department);
     if (sort) apiParams.set('sort', sort);
 
-    const apiUrl = `/api/users/public?${apiParams.toString()}`;
+    // Construct absolute URL for fetch (required in Server Components)
+    const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000';
+    const apiUrl = `${baseUrl}/api/users/public?${apiParams.toString()}`;
 
     // Fetch data
     let users = [];
