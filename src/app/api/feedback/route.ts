@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
 import User from '@/lib/db/models/User';
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
       targetUser: targetUserId,
       reviewPeriod: reviewPeriodId,
       reviewerFingerprint: fingerprint,
-      reviewerIpHash: require('crypto')
+      reviewerIpHash: crypto
         .createHash('sha256')
         .update(ipAddress)
         .digest('hex'),

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 /**
  * Hash an IP address using SHA-256
@@ -24,7 +25,6 @@ export function hashIP(ip: string): string {
  * @returns Hashed password
  */
 export async function hashPassword(password: string, saltRounds: number = 12): Promise<string> {
-  const bcrypt = require('bcryptjs');
   return await bcrypt.hash(password, saltRounds);
 }
 
@@ -39,7 +39,6 @@ export async function comparePassword(
   password: string,
   hashedPassword: string
 ): Promise<boolean> {
-  const bcrypt = require('bcryptjs');
   return await bcrypt.compare(password, hashedPassword);
 }
 

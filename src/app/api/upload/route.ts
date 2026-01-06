@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth/helpers';
 import { uploadImage } from '@/lib/cloudinary/upload';
 
+// Force this route to run only on the server
+export const runtime = 'nodejs';
+
 /**
  * POST /api/upload
  *
