@@ -87,6 +87,33 @@ export interface IFeedback extends Document {
 }
 
 /**
+ * Feedback Model Interface with Static Methods
+ */
+export interface IFeedbackModel extends Model<IFeedback> {
+  getUserStats(
+    userId: string,
+    periodId?: string
+  ): Promise<{
+    golden_mula: number;
+    fresh_carrot: number;
+    rotten_tomato: number;
+    total: number;
+  }>;
+
+  getUserAverageRatings(
+    userId: string,
+    periodId?: string
+  ): Promise<{
+    workQuality: number;
+    communication: number;
+    teamBehavior: number;
+    accountability: number;
+    overall: number;
+    count: number;
+  }>;
+}
+
+/**
  * Rating Category Schema
  */
 const RatingCategorySchema = new Schema<IRatingCategory>(
@@ -110,7 +137,7 @@ const RatingCategorySchema = new Schema<IRatingCategory>(
 /**
  * Feedback Schema
  */
-const FeedbackSchema = new Schema<IFeedback>(
+const FeedbackSchema = new Schema<IFeedback, IFeedbackModel>(
   {
     // Relations
     targetUser: {
@@ -260,11 +287,9 @@ FeedbackSchema.index(
   { unique: true }
 );
 
-// Other indexes
-FeedbackSchema.index({ 'moderation.status': 1 });
-FeedbackSchema.index({ visibility: 1 });
-FeedbackSchema.index({ mulaRating: 1 });
-FeedbackSchema.index({ createdAt: -1 });
+// Note: moderation.status, visibility, mulaRating already have index: true in field definitions
+// Only compound indexes are defined here
+
 
 /**
  * Method to calculate Mula Rating based on average score
@@ -415,8 +440,8 @@ FeedbackSchema.set('toObject', {
  * Feedback Model
  * Export as singleton to prevent model recompilation
  */
-const Feedback: Model<IFeedback> =
-  mongoose.models.Feedback ||
-  mongoose.model<IFeedback>('Feedback', FeedbackSchema);
+const Feedback: IFeedbackModel =
+  (mongoose.models.Feedback as IFeedbackModel) ||
+  mongoose.model<IFeedback, IFeedbackModel>('Feedback', FeedbackSchema);
 
 export default Feedback;

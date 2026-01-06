@@ -107,10 +107,11 @@ const FunnyQuoteSchema = new Schema<IFunnyQuote>(
 /**
  * Indexes for performance optimization
  */
+// Note: category, mood, isActive already have index: true in field definitions
+// Note: createdAt index is automatically created by timestamps: true
 FunnyQuoteSchema.index({ category: 1, isActive: 1 }); // Compound index for filtering
-FunnyQuoteSchema.index({ mood: 1 });
 FunnyQuoteSchema.index({ displayCount: -1 }); // For sorting by popularity
-FunnyQuoteSchema.index({ createdAt: -1 });
+
 
 /**
  * Static method to get a random quote by category

@@ -42,6 +42,7 @@ export default async function AdminLayout({
               {/* Admin Navigation - Desktop */}
               <nav className="hidden md:flex items-center gap-2">
                 <AdminNavLink href="/admin">Dashboard</AdminNavLink>
+                <AdminNavLink href="/directory">Directory</AdminNavLink>
                 <AdminNavLink href="/admin/users">Users</AdminNavLink>
                 <AdminNavLink href="/admin/pending">Pending</AdminNavLink>
                 <AdminNavLink href="/admin/feedbacks">Feedbacks</AdminNavLink>

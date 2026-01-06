@@ -28,13 +28,20 @@ export default async function ProfilePage() {
 
   // Convert MongoDB document to plain object with serialized values
   const user = {
-    ...dbUser,
     _id: dbUser._id.toString(),
+    email: dbUser.email,
+    role: dbUser.role,
+    accountStatus: dbUser.accountStatus,
+    fullName: dbUser.fullName,
+    designation: dbUser.designation,
+    department: dbUser.department,
+    profileImage: dbUser.profileImage,
+    bio: dbUser.bio,
+    publicSlug: dbUser.publicSlug,
+    isProfileActive: dbUser.isProfileActive,
+    settings: dbUser.settings,
     createdAt: dbUser.createdAt instanceof Date ? dbUser.createdAt.toISOString() : String(dbUser.createdAt),
     updatedAt: dbUser.updatedAt instanceof Date ? dbUser.updatedAt.toISOString() : String(dbUser.updatedAt),
-    approvedAt: dbUser.approvedAt ? (dbUser.approvedAt instanceof Date ? dbUser.approvedAt.toISOString() : String(dbUser.approvedAt)) : undefined,
-    // Convert approvedBy ObjectId to string if it exists
-    approvedBy: dbUser.approvedBy ? String(dbUser.approvedBy) : null,
   };
 
   return (

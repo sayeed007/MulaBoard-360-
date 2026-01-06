@@ -36,6 +36,7 @@ export default function UserMobileMenu({
 
     const mainLinks: MobileMenuLink[] = [
         { href: '/dashboard', label: 'Dashboard' },
+        { href: '/directory', label: 'Directory' },
         { href: '/my-reviews', label: 'My Reviews' },
         { href: '/profile', label: 'Profile' },
         { href: '/settings', label: 'Settings' },

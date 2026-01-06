@@ -206,7 +206,8 @@ UserSchema.methods.comparePassword = async function (
 // UserSchema.index({ role: 1 }); // Already defined as index: true
 // UserSchema.index({ isProfileActive: 1 }); // Already defined as index: true
 UserSchema.index({ department: 1 }); // For filtering by department
-UserSchema.index({ createdAt: -1 }); // For sorting by registration date
+// Note: createdAt index is automatically created by timestamps: true
+
 
 /**
  * Virtual for full profile URL

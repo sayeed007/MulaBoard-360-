@@ -120,10 +120,10 @@ const ReviewPeriodSchema = new Schema<IReviewPeriod>(
 /**
  * Indexes for performance optimization
  */
-ReviewPeriodSchema.index({ slug: 1 }); // Already unique
-ReviewPeriodSchema.index({ isActive: 1 });
+// Note: slug, isActive already have index: true in field definitions
+// Only add compound indexes here
 ReviewPeriodSchema.index({ startDate: 1, endDate: 1 }); // Compound index for date range queries
-ReviewPeriodSchema.index({ createdAt: -1 }); // For sorting by creation date
+
 
 /**
  * Virtual to check if period is currently active (within date range)

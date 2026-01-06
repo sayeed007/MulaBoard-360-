@@ -33,8 +33,18 @@ export default async function SettingsPage() {
 
   // Convert MongoDB document to plain object with string _id
   const user = {
-    ...dbUser,
     _id: dbUser._id.toString(),
+    email: dbUser.email,
+    role: dbUser.role,
+    accountStatus: dbUser.accountStatus,
+    fullName: dbUser.fullName,
+    designation: dbUser.designation,
+    department: dbUser.department,
+    profileImage: dbUser.profileImage,
+    bio: dbUser.bio,
+    publicSlug: dbUser.publicSlug,
+    isProfileActive: dbUser.isProfileActive,
+    settings: dbUser.settings,
     createdAt: dbUser.createdAt.toISOString(),
     updatedAt: dbUser.updatedAt.toISOString(),
   };

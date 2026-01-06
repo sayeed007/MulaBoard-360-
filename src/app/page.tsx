@@ -38,9 +38,9 @@ export default async function LandingPage() {
                     Go to Dashboard
                   </span>
                 </Link>
-                <Link href="/profile">
+                <Link href="/directory">
                   <span className="h-14 px-8 text-lg rounded-full bg-white/50 dark:bg-zinc-800/50 text-foreground hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-all backdrop-blur-md border border-border inline-flex items-center justify-center font-medium">
-                    Edit Profile
+                    Browse Directory 👥
                   </span>
                 </Link>
               </>
@@ -51,9 +51,9 @@ export default async function LandingPage() {
                     Get Started Free
                   </span>
                 </Link>
-                <Link href="/login">
+                <Link href="/directory">
                   <span className="h-14 px-8 text-lg rounded-full bg-white/50 dark:bg-zinc-800/50 text-foreground hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-all backdrop-blur-md border border-border inline-flex items-center justify-center font-medium">
-                    Sign In
+                    Browse Directory 👥
                   </span>
                 </Link>
               </>

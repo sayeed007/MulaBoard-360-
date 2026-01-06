@@ -21,6 +21,7 @@ export default function AdminMobileMenu({ userName, userInitial }: AdminMobileMe
 
     const links: MobileMenuLink[] = [
         { href: '/admin', label: 'Dashboard' },
+        { href: '/directory', label: 'Directory' },
         { href: '/admin/users', label: 'Users' },
         { href: '/admin/pending', label: 'Pending' },
         { href: '/admin/feedbacks', label: 'Feedbacks' },

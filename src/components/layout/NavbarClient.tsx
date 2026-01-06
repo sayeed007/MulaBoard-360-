@@ -37,6 +37,7 @@ export default function NavbarClient({ user, isAdmin, pendingCount }: NavbarProp
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-1">
                         <NavLink href="/dashboard">Dashboard</NavLink>
+                        <NavLink href="/directory">Directory</NavLink>
                         <NavLink href="/my-reviews">My Reviews</NavLink>
                         <NavLink href="/profile">Profile</NavLink>
                         <NavLink href="/settings">Settings</NavLink>
