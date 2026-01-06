@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
-    
+
     // Pagination
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12')));
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     // Build sort query
     let sortQuery: any = { createdAt: -1 }; // Default: newest first
-    
+
     if (sort === 'most-reviewed') {
       // We'll sort after aggregating feedback counts
       sortQuery = null;
@@ -62,16 +62,25 @@ export async function GET(request: NextRequest) {
       sortQuery = null;
     }
 
+    // Debug logging
+    console.log('Public users query:', JSON.stringify(query));
+
     // Get total count for pagination
     const totalUsers = await User.countDocuments(query);
+    console.log('Total users found:', totalUsers);
 
     // Fetch users
     let users = await User.find(query)
-      .select('fullName designation department profileImage bio publicSlug settings.showAggregatePublicly createdAt')
+      .select('fullName designation department profileImage bio publicSlug settings.showAggregatePublicly createdAt accountStatus isProfileActive')
       .sort(sortQuery || { createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
+
+    console.log('Users fetched:', users.length);
+    if (users.length > 0) {
+      console.log('First user sample:', JSON.stringify(users[0]));
+    }
 
     // Aggregate feedback stats for each user
     const usersWithStats = await Promise.all(
