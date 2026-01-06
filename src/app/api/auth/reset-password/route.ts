@@ -22,18 +22,41 @@ export async function POST(req: Request) {
             .update(token)
             .digest('hex');
 
-        // Find user with valid token and not expired
-        const user = await User.findOne({
+
+
+        // First, check if token exists at all
+        const userWithToken = await User.findOne({
             resetPasswordToken: resetTokenHash,
-            resetPasswordExpire: { $gt: Date.now() },
         });
 
-        if (!user) {
+        if (!userWithToken) {
+            console.log('Reset Password Failed: Token hash not found in DB');
+
+            // Debug: Check if the token exists anywhere or if it's a format issue
+            const count = await User.countDocuments({ resetPasswordToken: resetTokenHash });
+            console.log('Debug: Count of users with this exact token hash:', count);
+
+            // Debug: Dump all tokens (WARNING: Only for dev debugging, remove later)
+            // const allWithTokens = await User.find({ resetPasswordToken: { $exists: true, $ne: null } }).select('email resetPasswordToken');
+            // console.log('Debug: All active tokens:', allWithTokens);
+
             return NextResponse.json(
-                { message: 'Invalid or expired password reset token' },
+                { message: 'Invalid password reset token' },
                 { status: 400 }
             );
         }
+
+
+
+        // Check if expired
+        if (!userWithToken.resetPasswordExpire || new Date() > userWithToken.resetPasswordExpire) {
+            return NextResponse.json(
+                { message: 'Password reset token has expired' },
+                { status: 400 }
+            );
+        }
+
+        const user = userWithToken;
 
         // Set new password
         user.password = password;

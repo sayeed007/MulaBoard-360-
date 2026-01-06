@@ -164,6 +164,14 @@ export default function LoginForm() {
                 <Eye size={20} />
               )}
             </button>
+            <div className="flex justify-end mt-1">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -186,7 +194,7 @@ export default function LoginForm() {
             Register here
           </Link>
         </div>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 }
