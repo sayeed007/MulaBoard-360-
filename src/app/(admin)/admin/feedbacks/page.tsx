@@ -78,10 +78,10 @@ export default async function AdminFeedbacksPage() {
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {feedback.moderation?.isApproved ? (
+                                    {feedback.moderation?.status === 'approved' ? (
                                         <Badge variant="success">Approved</Badge>
-                                    ) : feedback.moderation?.isRejected ? (
-                                        <Badge variant="danger">Rejected</Badge>
+                                    ) : feedback.moderation?.status === 'flagged' ? (
+                                        <Badge variant="danger">Flagged</Badge>
                                     ) : (
                                         <Badge variant="warning">Pending</Badge>
                                     )}
@@ -107,14 +107,14 @@ export default async function AdminFeedbacksPage() {
 
                         {/* Actions */}
                         <div className="flex flex-col justify-center gap-2 border-l border-border/50 pl-6 min-w-[140px]">
-                            {!feedback.moderation?.isApproved && (
+                            {feedback.moderation?.status !== 'approved' && (
                                 <Button variant="outline" size="sm" className="w-full text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 border-green-200">
                                     Approve
                                 </Button>
                             )}
-                            {!feedback.moderation?.isRejected && (
+                            {feedback.moderation?.status !== 'flagged' && (
                                 <Button variant="outline" size="sm" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200">
-                                    Reject
+                                    Flag
                                 </Button>
                             )}
                             <Button variant="ghost" size="sm" className="w-full">

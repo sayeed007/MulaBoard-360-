@@ -254,3 +254,62 @@ export async function sendUserRejectedEmail(user: {
     html,
   });
 }
+
+/**
+ * Send password reset email
+ */
+export async function sendPasswordResetEmail(user: {
+  fullName: string;
+  email: string;
+  resetUrl: string;
+}) {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+          .button { display: inline-block; padding: 12px 24px; background: #10b981; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+          .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+          .warning { font-size: 12px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔐 Password Reset Request</h1>
+          </div>
+          <div class="content">
+            <p>Hello ${user.fullName},</p>
+            
+            <p>We received a request to reset your password for your MulaBoard account.</p>
+            
+            <p>Click the button below to set a new password:</p>
+            
+            <div style="text-align: center;">
+              <a href="${user.resetUrl}" class="button">Reset Password</a>
+            </div>
+            
+            <p class="warning">
+              If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.<br>
+              This link will expire in 1 hour.
+            </p>
+          </div>
+          <div class="footer">
+            <p>This is an automated message from MulaBoard</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: user.email,
+    subject: '🔐 Reset Your Password',
+    html,
+  });
+}

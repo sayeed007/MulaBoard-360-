@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Build query
     const query: any = {
       targetUser: user.id,
-      'moderation.isApproved': true, // Only show approved feedback
+      'moderation.status': 'approved', // Only show approved feedback
     };
 
     if (reviewPeriodId) {

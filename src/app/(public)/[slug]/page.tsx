@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 import { Button } from '@/components/ui';
 import FeedbackForm from '@/components/feedback/FeedbackForm';
 import HeroSection from '@/components/layout/HeroSection';
+import ProfileViewTracker from '@/components/profile/ProfileViewTracker';
 
 interface PublicProfilePageProps {
   params: Promise<{
@@ -87,6 +88,9 @@ export default async function PublicProfilePage({
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100 via-background to-background dark:from-indigo-950 dark:to-background pb-20">
+
+      {/* Track profile views (client-side) */}
+      <ProfileViewTracker slug={slug} isOwnProfile={isOwnProfile} />
 
       {/* Decorated Header Background */}
       <HeroSection />
@@ -190,7 +194,13 @@ export default async function PublicProfilePage({
           <div className="mt-8" id="give-feedback">
             <FeedbackForm
               targetUser={userForForm}
-              reviewPeriodId={activePeriod._id.toString()}
+              reviewPeriod={{
+                _id: activePeriod._id.toString(),
+                name: activePeriod.name,
+                startDate: activePeriod.startDate.toISOString(),
+                endDate: activePeriod.endDate.toISOString(),
+                theme: activePeriod.theme,
+              }}
             />
           </div>
         )}

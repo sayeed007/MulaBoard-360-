@@ -17,6 +17,10 @@ export interface IUser extends Document {
   approvedAt?: Date;
   rejectionReason?: string;
 
+  // Password Reset
+  resetPasswordToken?: string;
+  resetPasswordExpire?: Date;
+
   // Profile Information
   fullName: string;
   designation: string;
@@ -33,6 +37,9 @@ export interface IUser extends Document {
     emailNotifications: boolean;
     showAggregatePublicly: boolean;
   };
+
+  // Analytics
+  profileViews: number;
 
   // Metadata
   createdAt: Date;
@@ -99,6 +106,10 @@ const UserSchema = new Schema<IUser>(
       maxlength: [500, 'Rejection reason cannot exceed 500 characters'],
     },
 
+    // Password Reset
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
     // Profile Information
     fullName: {
       type: String,
@@ -163,6 +174,13 @@ const UserSchema = new Schema<IUser>(
         type: Boolean,
         default: false,
       },
+    },
+
+    // Analytics
+    profileViews: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

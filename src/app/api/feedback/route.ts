@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       mulaRating,
       visibility: 'private', // Default to private, user can change later
       moderation: {
-        status: 'pending',
+        status: 'approved', // Feedback goes directly to users
       },
     });
 

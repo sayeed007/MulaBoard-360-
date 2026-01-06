@@ -29,12 +29,8 @@ const feedbackRatingsSchema = z.object({
   overall: ratingCategorySchema,
 });
 
-// Feedback Submission Schema
+// Feedback Submission Schema (client-side form)
 export const feedbackSubmissionSchema = z.object({
-  // Target information
-  targetUser: z.string().min(1, 'Target user is required'),
-  reviewPeriod: z.string().min(1, 'Review period is required'),
-
   // Ratings
   ratings: feedbackRatingsSchema,
 
@@ -51,21 +47,31 @@ export const feedbackSubmissionSchema = z.object({
     .max(500, 'Areas for improvement cannot exceed 500 characters')
     .trim(),
 
+  // Honeypot field (should be empty)
+  honeypot: z.string().max(0, 'Invalid submission').optional().or(z.literal('')),
+
+  // Confirmation checkbox
+  confirmation: z.boolean().refine((val) => val === true, {
+    message: 'Please confirm before submitting',
+  }),
+});
+
+export type FeedbackSubmissionInput = z.infer<typeof feedbackSubmissionSchema>;
+
+// Full Feedback Submission Schema (server-side with all fields)
+export const feedbackSubmissionServerSchema = feedbackSubmissionSchema.extend({
+  // Target information
+  targetUserId: z.string().min(1, 'Target user is required'),
+  reviewPeriodId: z.string().min(1, 'Review period is required'),
+
   // Spam prevention fields
   fingerprint: z.string().min(1, 'Browser fingerprint is required'),
-  ipHash: z.string().min(1, 'IP hash is required'),
-
-  // hCaptcha token
-  hCaptchaToken: z.string().min(1, 'Please complete the CAPTCHA'),
-
-  // Honeypot field (should be empty)
-  website: z.string().max(0, 'Invalid submission').optional().or(z.literal('')),
 
   // Form timing (minimum 30 seconds)
   formLoadTime: z.number().positive('Invalid form load time'),
 });
 
-export type FeedbackSubmissionInput = z.infer<typeof feedbackSubmissionSchema>;
+export type FeedbackSubmissionServerInput = z.infer<typeof feedbackSubmissionServerSchema>;
 
 // Feedback Update Schema (for employees to update their received feedback)
 export const updateFeedbackVisibilitySchema = z.object({

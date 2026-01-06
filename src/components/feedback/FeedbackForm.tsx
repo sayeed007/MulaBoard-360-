@@ -16,14 +16,26 @@ import type { User } from '@/types/user';
  * Main feedback submission form with spam prevention and validation
  */
 
+interface ReviewPeriod {
+  _id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  theme: {
+    name: string;
+    primaryEmoji: string;
+    backgroundColor?: string;
+  };
+}
+
 interface FeedbackFormProps {
   targetUser: User;
-  reviewPeriodId: string;
+  reviewPeriod: ReviewPeriod;
 }
 
 export default function FeedbackForm({
   targetUser,
-  reviewPeriodId,
+  reviewPeriod,
 }: FeedbackFormProps) {
   const router = useRouter();
   const { fingerprint, loading: fingerprintLoading } = useFingerprint();
@@ -32,7 +44,6 @@ export default function FeedbackForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingEligibility, setIsCheckingEligibility] = useState(true);
   const [eligibilityError, setEligibilityError] = useState<string>('');
-  const [confirmation, setConfirmation] = useState(false);
 
   // Track form load time for spam prevention
   const formLoadTime = useRef(Date.now());
@@ -55,7 +66,8 @@ export default function FeedbackForm({
       },
       strengths: '',
       improvements: '',
-      website: '',
+      honeypot: '',
+      confirmation: false,
     },
   });
 
@@ -78,7 +90,7 @@ export default function FeedbackForm({
           body: JSON.stringify({
             fingerprint,
             targetUserId: targetUser._id,
-            reviewPeriodId,
+            reviewPeriodId: reviewPeriod._id,
           }),
         });
 
@@ -96,7 +108,7 @@ export default function FeedbackForm({
     }
 
     checkEligibility();
-  }, [fingerprint, targetUser._id, reviewPeriodId]);
+  }, [fingerprint, targetUser._id, reviewPeriod._id]);
 
   const onSubmit = async (data: FeedbackSubmissionInput) => {
     if (!fingerprint) {
@@ -116,7 +128,7 @@ export default function FeedbackForm({
         body: JSON.stringify({
           ...data,
           targetUserId: targetUser._id,
-          reviewPeriodId,
+          reviewPeriodId: reviewPeriod._id,
           fingerprint,
           formLoadTime: formLoadTime.current,
         }),
@@ -173,9 +185,20 @@ export default function FeedbackForm({
           <h1 className="text-3xl font-bold mb-2">
             Give Feedback to {targetUser.fullName}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Your feedback is anonymous and helps {targetUser.fullName.split(' ')[0]} grow professionally.
           </p>
+
+          {/* Review Period Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+            <span className="text-2xl">{reviewPeriod.theme.primaryEmoji}</span>
+            <div>
+              <span className="font-semibold text-primary">{reviewPeriod.name}</span>
+              <span className="text-muted-foreground ml-2">
+                • {new Date(reviewPeriod.startDate).toLocaleDateString()} - {new Date(reviewPeriod.endDate).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -218,9 +241,8 @@ export default function FeedbackForm({
             disabled={isSubmitting}
             rows={4}
             maxLength={500}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${
-              errors.strengths ? 'border-destructive' : 'border-input'
-            }`}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.strengths ? 'border-destructive' : 'border-input'
+              }`}
             placeholder="Example: Great at explaining complex concepts, always willing to help team members..."
           />
           <div className="flex justify-between items-center">
@@ -246,9 +268,8 @@ export default function FeedbackForm({
             disabled={isSubmitting}
             rows={4}
             maxLength={500}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${
-              errors.improvements ? 'border-destructive' : 'border-input'
-            }`}
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.improvements ? 'border-destructive' : 'border-input'
+              }`}
             placeholder="Example: Could improve time management, would benefit from more documentation..."
           />
           <div className="flex justify-between items-center">
@@ -266,7 +287,7 @@ export default function FeedbackForm({
         {/* Honeypot (hidden field for spam prevention) */}
         <input
           type="text"
-          {...register('website')}
+          {...register('honeypot')}
           className="hidden"
           tabIndex={-1}
           autoComplete="off"
@@ -278,8 +299,7 @@ export default function FeedbackForm({
             <input
               type="checkbox"
               id="confirmation"
-              checked={confirmation}
-              onChange={(e) => setConfirmation(e.target.checked)}
+              {...register('confirmation')}
               disabled={isSubmitting}
               className="mt-1 w-5 h-5 rounded border-input focus:ring-2 focus:ring-primary cursor-pointer"
             />
@@ -287,8 +307,8 @@ export default function FeedbackForm({
               I confirm that this feedback is honest, constructive, and respectful. I understand that while my identity is anonymous, my feedback will be visible to {targetUser.fullName}.
             </label>
           </div>
-          {!confirmation && error && (
-            <p className="text-sm text-destructive ml-8">Please confirm before submitting</p>
+          {errors.confirmation && (
+            <p className="text-sm text-destructive ml-8">{errors.confirmation.message}</p>
           )}
         </div>
 

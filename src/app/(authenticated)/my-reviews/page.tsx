@@ -7,6 +7,7 @@ import Feedback from '@/lib/db/models/Feedback';
 import '@/lib/db/models/ReviewPeriod';
 import { calculateAggregateRatings } from '@/lib/utils/mula-calculator';
 import { Button, Card, Badge } from '@/components/ui';
+import InteractiveFeedbackCard from '@/components/feedback/InteractiveFeedbackCard';
 
 export const metadata = {
     title: 'My Reviews | MulaBoard',
@@ -25,7 +26,7 @@ export default async function MyReviewsPage() {
     // Fetch approved feedback for the user
     const feedbacks = await Feedback.find({
         targetUser: user.id,
-        'moderation.isApproved': true,
+        'moderation.status': 'approved',
     })
         .sort({ createdAt: -1 })
         .populate('reviewPeriod', 'name slug theme')
@@ -124,32 +125,18 @@ export default async function MyReviewsPage() {
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {periodFeedbacks.map((feedback: any) => (
-                                        <div key={feedback._id} className="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-sm rounded-xl p-6 border border-white/10 dark:border-zinc-800 hover:shadow-md transition-all">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="text-4xl">
-                                                    {feedback.mulaRating === 'golden_mula' ? '🌿' :
-                                                        feedback.mulaRating === 'fresh_carrot' ? '🥕' : '🍅'}
-                                                </div>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {new Date(feedback.createdAt).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                            <div className="space-y-2 mb-4">
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-muted-foreground">Communication</span>
-                                                    <span className="font-medium">{feedback.ratings.communication.score}/5</span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span className="text-muted-foreground">Teamwork</span>
-                                                    <span className="font-medium">{feedback.ratings.teamwork.score}/5</span>
-                                                </div>
-                                            </div>
-                                            {feedback.comment && (
-                                                <div className="bg-muted/30 p-3 rounded-lg text-sm text-foreground/80 italic">
-                                                    &quot;{feedback.comment}&quot;
-                                                </div>
-                                            )}
-                                        </div>
+                                        <InteractiveFeedbackCard
+                                            key={feedback._id}
+                                            feedback={{
+                                                _id: feedback._id.toString(),
+                                                mulaRating: feedback.mulaRating,
+                                                ratings: feedback.ratings,
+                                                strengths: feedback.strengths,
+                                                improvements: feedback.improvements,
+                                                visibility: feedback.visibility,
+                                                createdAt: feedback.createdAt.toISOString ? feedback.createdAt.toISOString() : feedback.createdAt,
+                                            }}
+                                        />
                                     ))}
                                 </div>
                             </div>

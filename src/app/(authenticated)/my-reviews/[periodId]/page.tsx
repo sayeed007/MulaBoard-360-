@@ -42,7 +42,7 @@ export default async function ReviewDetailsPage({ params }: ReviewDetailsPagePro
     const feedbacks = await Feedback.find({
         targetUser: user.id,
         reviewPeriod: params.periodId,
-        'moderation.isApproved': true,
+        'moderation.status': 'approved',
     })
         .sort({ createdAt: -1 })
         .lean();
