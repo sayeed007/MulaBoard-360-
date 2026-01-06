@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import MulaRatingIcon from '@/components/feedback/MulaRatingIcon';
 import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
@@ -56,9 +57,8 @@ export default async function AdminFeedbacksPage() {
                     <div key={feedback._id} className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row gap-6">
                         {/* Rating Visual */}
                         <div className="flex-shrink-0 flex flex-col items-center justify-center min-w-[100px] border-r border-border/50 pr-6">
-                            <div className="text-5xl mb-2">
-                                {feedback.mulaRating === 'golden_mula' ? '🌿' :
-                                    feedback.mulaRating === 'fresh_carrot' ? '🥕' : '🍅'}
+                            <div className="mb-2">
+                                <MulaRatingIcon rating={feedback.mulaRating} size={64} />
                             </div>
                             <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 {feedback.mulaRating.replace('_', ' ')}

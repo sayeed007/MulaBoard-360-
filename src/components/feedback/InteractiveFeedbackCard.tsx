@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import MulaRatingIcon from './MulaRatingIcon';
 import { Button, Badge } from '@/components/ui';
 import Image from 'next/image';
 
@@ -58,31 +60,8 @@ export default function InteractiveFeedbackCard({ feedback }: InteractiveFeedbac
   return (
     <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl p-6 border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm hover:shadow-xl hover:scale-[1.01] hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
-        <div className="relative w-16 h-16">
-          {feedback.mulaRating === 'golden_mula' && (
-            <Image
-              src="/images/golden_mula_transparent.png"
-              alt="Golden Mula"
-              fill
-              className="object-contain"
-            />
-          )}
-          {feedback.mulaRating === 'fresh_carrot' && (
-            <Image
-              src="/images/fresh_carrot_transparent.png"
-              alt="Fresh Carrot"
-              fill
-              className="object-contain"
-            />
-          )}
-          {feedback.mulaRating === 'rotten_tomato' && (
-            <Image
-              src="/images/rotten_tomato_transparent.png"
-              alt="Rotten Tomato"
-              fill
-              className="object-contain"
-            />
-          )}
+        <div className="flex-shrink-0">
+          <MulaRatingIcon rating={feedback.mulaRating} size={64} />
         </div>
         <div className="flex flex-col items-end gap-2">
           <Badge variant={visibility === 'public' ? 'success' : 'default'}>

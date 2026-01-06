@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import MulaRatingIcon from '@/components/feedback/MulaRatingIcon';
 import { getCurrentUser } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
@@ -77,9 +78,8 @@ export default async function MyReviewsPage() {
 
                     <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-6 border shadow-sm flex flex-col items-center justify-center text-center">
                         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">Dominant Vibe</h3>
-                        <div className="text-5xl mb-2">
-                            {aggregateStats.dominant === 'golden_mula' ? '🌿' :
-                                aggregateStats.dominant === 'fresh_carrot' ? '🥕' : '🍅'}
+                        <div className="mb-2">
+                            <MulaRatingIcon rating={aggregateStats.dominant} size={64} />
                         </div>
                         <div className="text-lg font-bold capitalize">
                             {aggregateStats.dominant.replace('_', ' ')}
@@ -90,21 +90,21 @@ export default async function MyReviewsPage() {
                         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4 text-center">Rating Distribution</h3>
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
-                                <span className="text-2xl">🌿</span>
+                                <MulaRatingIcon rating="golden_mula" size={32} />
                                 <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                     <div className="h-full bg-yellow-500" style={{ width: `${aggregateStats.percentage.golden_mula}%` }}></div>
                                 </div>
                                 <span className="text-sm font-medium w-8 text-right">{aggregateStats.percentage.golden_mula}%</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="text-2xl">🥕</span>
+                                <MulaRatingIcon rating="fresh_carrot" size={32} />
                                 <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                     <div className="h-full bg-orange-500" style={{ width: `${aggregateStats.percentage.fresh_carrot}%` }}></div>
                                 </div>
                                 <span className="text-sm font-medium w-8 text-right">{aggregateStats.percentage.fresh_carrot}%</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="text-2xl">🍅</span>
+                                <MulaRatingIcon rating="rotten_tomato" size={32} />
                                 <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                     <div className="h-full bg-red-500" style={{ width: `${aggregateStats.percentage.rotten_tomato}%` }}></div>
                                 </div>
@@ -117,30 +117,44 @@ export default async function MyReviewsPage() {
                 {/* Reviews by Period */}
                 {Object.keys(feedbackByPeriod).length > 0 ? (
                     <div className="space-y-8">
-                        {Object.entries(feedbackByPeriod).map(([periodName, periodFeedbacks]) => (
-                            <div key={periodName} className="space-y-4">
-                                <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <span>📅</span> {periodName}
-                                    <span className="text-sm font-normal text-muted-foreground ml-2">({periodFeedbacks.length} reviews)</span>
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {periodFeedbacks.map((feedback: any) => (
-                                        <InteractiveFeedbackCard
-                                            key={feedback._id}
-                                            feedback={{
-                                                _id: feedback._id.toString(),
-                                                mulaRating: feedback.mulaRating,
-                                                ratings: feedback.ratings,
-                                                strengths: feedback.strengths,
-                                                improvements: feedback.improvements,
-                                                visibility: feedback.visibility,
-                                                createdAt: feedback.createdAt.toISOString ? feedback.createdAt.toISOString() : feedback.createdAt,
-                                            }}
-                                        />
-                                    ))}
+                        {Object.entries(feedbackByPeriod).map(([periodName, periodFeedbacks]) => {
+                            const firstFeedback: any = periodFeedbacks[0];
+                            const periodId = firstFeedback?.reviewPeriod?._id;
+
+                            return (
+                                <div key={periodName} className="space-y-4">
+                                    <div className="flex justify-between items-end border-b border-border/50 pb-2 mb-4">
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            <span>📅</span> {periodName}
+                                            <span className="text-sm font-normal text-muted-foreground ml-2">({periodFeedbacks.length} reviews)</span>
+                                        </h2>
+                                        {periodId && (
+                                            <Link href={`/my-reviews/${periodId}`}>
+                                                <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                                                    View Analysis →
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {periodFeedbacks.map((feedback: any) => (
+                                            <InteractiveFeedbackCard
+                                                key={feedback._id}
+                                                feedback={{
+                                                    _id: feedback._id.toString(),
+                                                    mulaRating: feedback.mulaRating,
+                                                    ratings: feedback.ratings,
+                                                    strengths: feedback.strengths,
+                                                    improvements: feedback.improvements,
+                                                    visibility: feedback.visibility,
+                                                    createdAt: feedback.createdAt.toISOString ? feedback.createdAt.toISOString() : feedback.createdAt,
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="bg-card/30 rounded-2xl p-12 text-center border border-dashed">

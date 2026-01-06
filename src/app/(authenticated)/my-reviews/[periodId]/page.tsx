@@ -1,15 +1,16 @@
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
 import ReviewPeriod from '@/lib/db/models/ReviewPeriod';
 import { Button } from '@/components/ui';
+import MulaRatingIcon from '@/components/feedback/MulaRatingIcon';
 
 interface ReviewDetailsPageProps {
-    params: {
+    params: Promise<{
         periodId: string;
-    };
+    }>;
 }
 
 export const metadata = {
@@ -19,6 +20,7 @@ export const metadata = {
 
 export default async function ReviewDetailsPage({ params }: ReviewDetailsPageProps) {
     const user = await getCurrentUser();
+    const { periodId } = await params;
 
     if (!user) {
         redirect('/login');
@@ -27,13 +29,13 @@ export default async function ReviewDetailsPage({ params }: ReviewDetailsPagePro
     await connectDB();
 
     // Validate period ID format (basic check)
-    if (!params.periodId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!periodId.match(/^[0-9a-fA-F]{24}$/)) {
         // If not an ID, it might be a slug or invalid. For now assume ID.
         // In a real app we might handle slugs.
         redirect('/my-reviews');
     }
 
-    const period = await ReviewPeriod.findById(params.periodId).lean();
+    const period = await ReviewPeriod.findById(periodId).lean();
 
     if (!period) {
         redirect('/my-reviews');
@@ -41,7 +43,7 @@ export default async function ReviewDetailsPage({ params }: ReviewDetailsPagePro
 
     const feedbacks = await Feedback.find({
         targetUser: user.id,
-        reviewPeriod: params.periodId,
+        reviewPeriod: periodId,
         'moderation.status': 'approved',
     })
         .sort({ createdAt: -1 })
@@ -78,9 +80,8 @@ export default async function ReviewDetailsPage({ params }: ReviewDetailsPagePro
                         <div key={feedback._id} className="bg-card/50 backdrop-blur-sm rounded-2xl p-6 border shadow-sm">
                             <div className="flex flex-col md:flex-row gap-6">
                                 <div className="flex-shrink-0 flex flex-col items-center">
-                                    <div className="text-5xl mb-2">
-                                        {feedback.mulaRating === 'golden_mula' ? '🌿' :
-                                            feedback.mulaRating === 'fresh_carrot' ? '🥕' : '🍅'}
+                                    <div className="mb-2">
+                                        <MulaRatingIcon rating={feedback.mulaRating} size={64} />
                                     </div>
                                     <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                         {feedback.mulaRating.replace('_', ' ')}
