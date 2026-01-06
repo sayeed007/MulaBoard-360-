@@ -1,3 +1,4 @@
+import 'server-only';
 import cloudinary, { validateCloudinaryConfig } from './config';
 
 /**
