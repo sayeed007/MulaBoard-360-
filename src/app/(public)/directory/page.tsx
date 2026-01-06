@@ -30,13 +30,15 @@ async function DirectoryContent({ searchParams }: DirectoryPageProps) {
     const department = params.department || '';
     const sort = params.sort || 'newest';
 
-    // Build API URL
-    const apiUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL}/api/users/public`);
-    apiUrl.searchParams.set('page', page);
-    apiUrl.searchParams.set('limit', '12');
-    if (search) apiUrl.searchParams.set('search', search);
-    if (department) apiUrl.searchParams.set('department', department);
-    if (sort) apiUrl.searchParams.set('sort', sort);
+    // Build API URL - use relative path to work in both dev and production
+    const apiParams = new URLSearchParams();
+    apiParams.set('page', page);
+    apiParams.set('limit', '12');
+    if (search) apiParams.set('search', search);
+    if (department) apiParams.set('department', department);
+    if (sort) apiParams.set('sort', sort);
+
+    const apiUrl = `/api/users/public?${apiParams.toString()}`;
 
     // Fetch data
     let users = [];
@@ -50,7 +52,7 @@ async function DirectoryContent({ searchParams }: DirectoryPageProps) {
     let departments: string[] = [];
 
     try {
-        const response = await fetch(apiUrl.toString(), {
+        const response = await fetch(apiUrl, {
             cache: 'no-store',
         });
 
