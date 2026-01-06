@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth/helpers';
-import ProfileForm from '@/components/profile/ProfileForm';
+import EditProfileForm from '@/components/profile/EditProfileForm';
 import { Button } from '@/components/ui';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
@@ -72,7 +72,7 @@ export default async function ProfilePage() {
       <div className="grid gap-6">
         {/* Profile Edit Form Card */}
         <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-white/20 dark:border-zinc-800 rounded-2xl p-8 shadow-sm">
-          <ProfileForm user={user} />
+          <EditProfileForm user={user} />
         </div>
 
         {/* Profile Visibility Notice */}

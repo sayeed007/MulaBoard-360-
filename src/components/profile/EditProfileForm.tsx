@@ -43,7 +43,7 @@ interface ProfileFormProps {
   user: User;
 }
 
-export default function ProfileForm({ user }: ProfileFormProps) {
+export default function EditProfileForm({ user }: ProfileFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
