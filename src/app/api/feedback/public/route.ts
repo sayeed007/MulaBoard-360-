@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import Feedback from '@/lib/db/models/Feedback';
+// Import ReviewPeriod to ensure the model is registered for population
+import '@/lib/db/models/ReviewPeriod';
 import mongoose from 'mongoose';
 
 /**
