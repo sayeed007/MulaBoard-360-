@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import MulaRatingIcon from './MulaRatingIcon';
 import { Button, Badge } from '@/components/ui';
@@ -22,9 +22,20 @@ interface InteractiveFeedbackCardProps {
     visibility: 'private' | 'public';
     createdAt: string;
   };
+  targetUser?: {
+    fullName: string;
+    email?: string;
+  };
+  customActions?: ReactNode;
+  hideVisibilityToggle?: boolean;
 }
 
-export default function InteractiveFeedbackCard({ feedback }: InteractiveFeedbackCardProps) {
+export default function InteractiveFeedbackCard({
+  feedback,
+  targetUser,
+  customActions,
+  hideVisibilityToggle = false
+}: InteractiveFeedbackCardProps) {
   const [visibility, setVisibility] = useState<'private' | 'public'>(feedback.visibility);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -60,13 +71,28 @@ export default function InteractiveFeedbackCard({ feedback }: InteractiveFeedbac
   return (
     <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md rounded-2xl p-6 border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm hover:shadow-xl hover:scale-[1.01] hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
-        <div className="flex-shrink-0">
-          <MulaRatingIcon rating={feedback.mulaRating} size={64} />
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <MulaRatingIcon rating={feedback.mulaRating} size={64} />
+          </div>
+          {targetUser && (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Feedback For</p>
+              <h3 className="text-lg font-bold text-foreground">{targetUser.fullName}</h3>
+              {targetUser.email && <p className="text-xs text-muted-foreground">{targetUser.email}</p>}
+            </div>
+          )}
         </div>
         <div className="flex flex-col items-end gap-2">
-          <Badge variant={visibility === 'public' ? 'success' : 'default'}>
-            {visibility === 'public' ? '🌍 Public' : '🔒 Private'}
-          </Badge>
+          {!hideVisibilityToggle ? (
+            <Badge variant={visibility === 'public' ? 'success' : 'default'}>
+              {visibility === 'public' ? '🌍 Public' : '🔒 Private'}
+            </Badge>
+          ) : (
+            <span className="text-xs font-mono bg-muted/50 px-2 py-1 rounded">
+              {feedback.mulaRating.replace('_', ' ').toUpperCase()}
+            </span>
+          )}
           <span className="text-xs text-muted-foreground">
             {new Date(feedback.createdAt).toLocaleDateString()}
           </span>
@@ -150,15 +176,22 @@ export default function InteractiveFeedbackCard({ feedback }: InteractiveFeedbac
         >
           {isExpanded ? '▲ Hide Details' : '▼ View Details'}
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1"
-          onClick={handleVisibilityToggle}
-          disabled={isUpdating}
-        >
-          {isUpdating ? 'Updating...' : visibility === 'private' ? '🌍 Make Public' : '🔒 Make Private'}
-        </Button>
+
+        {customActions ? (
+          <div className="flex-1 flex gap-2">
+            {customActions}
+          </div>
+        ) : !hideVisibilityToggle ? (
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            onClick={handleVisibilityToggle}
+            disabled={isUpdating}
+          >
+            {isUpdating ? 'Updating...' : visibility === 'private' ? '🌍 Make Public' : '🔒 Make Private'}
+          </Button>
+        ) : null}
       </div>
     </div>
   );
