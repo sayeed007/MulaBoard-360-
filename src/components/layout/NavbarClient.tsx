@@ -2,6 +2,7 @@
 
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button, Logo } from '@/components/ui';
 import NavLink from './NavLink';
 import UserMobileMenu from './UserMobileMenu';
@@ -88,9 +89,9 @@ export default function NavbarClient({ user, isAdmin, pendingCount }: NavbarProp
                         </Button>
 
                         <Link href="/profile" className="flex-shrink-0">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-background shadow-sm hover:scale-105 transition-transform border border-primary">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-primary shadow-sm hover:scale-105 transition-transform relative overflow-hidden">
                                 {user.image ? (
-                                    <img src={user.image} alt={user.name} className="w-full h-full rounded-full object-cover" />
+                                    <Image src={user.image} alt={user.name} fill className="object-cover" />
                                 ) : (
                                     user.name.charAt(0)
                                 )}

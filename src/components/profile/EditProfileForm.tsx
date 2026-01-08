@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema, type UpdateProfileInput } from '@/validators/user';
 import type { User } from '@/types/user';
 import { Button, Input, Textarea, Alert } from '@/components/ui';
+import Image from 'next/image';
 
 // Inline utility functions to avoid Cloudinary import chain
 function validateImageFile(file: File): { valid: boolean; error?: string } {
@@ -146,7 +147,7 @@ export default function EditProfileForm({ user }: ProfileFormProps) {
       setTimeout(() => {
         router.refresh();
       }, 1000);
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
@@ -174,12 +175,13 @@ export default function EditProfileForm({ user }: ProfileFormProps) {
         <div className="space-y-6">
           {/* Profile Image */}
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm relative">
               {user.profileImage ? (
-                <img
+                <Image
                   src={user.profileImage}
                   alt="Profile"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center text-4xl text-muted-foreground/50">
@@ -238,12 +240,13 @@ export default function EditProfileForm({ user }: ProfileFormProps) {
           <label className="block text-sm font-medium mb-4 text-foreground/80">Profile Photo</label>
           <div className="flex items-center gap-6">
             <div className="relative group">
-              <div className={`w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm ${isUploadingImage ? 'opacity-50' : ''}`}>
+              <div className={`w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm relative ${isUploadingImage ? 'opacity-50' : ''}`}>
                 {previewImage ? (
-                  <img
+                  <Image
                     src={previewImage}
                     alt="Profile"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center text-4xl text-muted-foreground/50">

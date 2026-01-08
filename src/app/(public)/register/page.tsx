@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/helpers';
 import RegisterForm from '@/components/auth/RegisterForm';
 import Image from 'next/image';
+import { Logo } from '@/components/ui';
 
 export const metadata = {
   title: 'Register | MulaBoard',
@@ -27,23 +28,9 @@ export default async function RegisterPage() {
 
         <div className="relative z-10 text-center space-y-8 animate-slide-up">
           {/* Logo Container */}
-          <div className="relative w-40 h-40 mx-auto mb-4 transition-transform hover:scale-105 duration-500">
-            {/* Light Mode Logo */}
-            <Image
-              src="/logo_black.png"
-              alt="MulaBoard Logo"
-              fill
-              className="object-contain drop-shadow-sm dark:hidden"
-              priority
-            />
-            {/* Dark Mode Logo */}
-            <Image
-              src="/logo.png"
-              alt="MulaBoard Logo"
-              fill
-              className="object-contain drop-shadow-2xl hidden dark:block"
-              priority
-            />
+          <div className="relative w-48 h-48 mx-auto mb-4 transition-transform hover:scale-105 duration-500">
+            {/* Logo */}
+            <Logo size={192} priority />
           </div>
 
           <div className="space-y-4 max-w-lg">
@@ -51,7 +38,7 @@ export default async function RegisterPage() {
               Join the Revolution
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed font-light">
-              "Building better workplaces, one honest review at a time."
+              &quot;Building better workplaces, one honest review at a time.&quot;
             </p>
           </div>
         </div>

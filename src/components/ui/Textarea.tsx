@@ -43,7 +43,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const hasError = !!error;
 
     const baseStyles =
-      'px-4 py-2 border rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed resize-vertical';
+      'px-4 py-2 bg-background text-foreground border rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed resize-vertical';
 
     const errorStyles = hasError
       ? 'border-destructive focus:ring-destructive'

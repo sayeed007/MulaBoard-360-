@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getCurrentUser, hasAdminRole } from '@/lib/auth/helpers';
 import connectDB from '@/lib/db/connect';
@@ -61,9 +62,9 @@ export default async function AdminUsersPage() {
                                 <tr key={user._id} className="hover:bg-muted/30 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary relative overflow-hidden">
                                                 {user.profileImage ? (
-                                                    <img src={user.profileImage} alt={user.fullName} className="w-full h-full rounded-full object-cover" />
+                                                    <Image src={user.profileImage} alt={user.fullName} fill className="object-cover" />
                                                 ) : (
                                                     user.fullName.charAt(0)
                                                 )}

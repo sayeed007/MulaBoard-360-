@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/db/models/User';
 import { getCurrentUser } from '@/lib/auth/helpers';
@@ -111,11 +112,14 @@ export default async function DirectoryUserProfilePage({
                             <div className="flex-shrink-0">
                                 <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-primary via-purple-500 to-pink-500 shadow-lg">
                                     {profileUser.profileImage ? (
-                                        <img
-                                            src={profileUser.profileImage}
-                                            alt={profileUser.fullName}
-                                            className="w-full h-full rounded-full object-cover border-4 border-background bg-background"
-                                        />
+                                        <div className="w-full h-full rounded-full border-4 border-background bg-background relative overflow-hidden">
+                                            <Image
+                                                src={profileUser.profileImage}
+                                                alt={profileUser.fullName}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
                                     ) : (
                                         <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-5xl font-bold text-primary border-4 border-background">
                                             {profileUser.fullName.charAt(0)}

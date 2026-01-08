@@ -30,7 +30,7 @@ export default function RatingInput({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2 justify-start flex-wrap">
         {RATING_SCALE.map((rating) => {
           const isSelected = value === rating.value;
           const isHovered = hoveredValue === rating.value;
@@ -48,7 +48,7 @@ export default function RatingInput({
               onMouseLeave={() => !disabled && setHoveredValue(null)}
               disabled={disabled}
               className={`
-                text-4xl p-2 rounded-xl transition-all duration-200 border-2
+                text-3xl md:text-4xl p-1.5 md:p-2 rounded-xl transition-all duration-200 border-2 flex-shrink-0
                 ${disabled ? 'cursor-not-allowed opacity-50 border-transparent' : 'cursor-pointer hover:scale-110'}
                 ${isSelected ? 'border-primary bg-primary/5 scale-110' : 'border-transparent scale-100'}
                 ${!isSelected && isHovered ? 'scale-110' : ''}

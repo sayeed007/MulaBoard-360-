@@ -61,11 +61,14 @@ export default function ProfileCard({ user }: ProfileCardProps) {
                         <div className="relative">
                             <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-br from-primary via-purple-500 to-pink-500 shadow-lg">
                                 {profileImage ? (
-                                    <img
-                                        src={profileImage}
-                                        alt={fullName}
-                                        className="w-full h-full rounded-full object-cover border-4 border-background"
-                                    />
+                                    <div className="w-full h-full rounded-full border-4 border-background relative overflow-hidden">
+                                        <Image
+                                            src={profileImage}
+                                            alt={fullName}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
                                 ) : (
                                     <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-2xl font-bold text-primary border-4 border-background">
                                         {fullName.charAt(0)}

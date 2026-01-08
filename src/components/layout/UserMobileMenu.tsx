@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, LogOut, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui';
+import Image from 'next/image';
 
 interface MobileMenuLink {
     href: string;
@@ -70,12 +70,13 @@ export default function UserMobileMenu({
                             {/* User Info */}
                             <div className="flex items-center gap-3 pb-3 border-b border-border mb-3">
                                 <Link href="/profile" onClick={() => setIsOpen(false)}>
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-background shadow-sm">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-primary border-2 border-background shadow-sm relative overflow-hidden">
                                         {userImage ? (
-                                            <img
+                                            <Image
                                                 src={userImage}
                                                 alt={userName}
-                                                className="w-full h-full rounded-full object-cover"
+                                                fill
+                                                className="object-cover"
                                             />
                                         ) : (
                                             userInitial

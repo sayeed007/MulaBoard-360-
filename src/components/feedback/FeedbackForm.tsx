@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { feedbackSubmissionSchema, type FeedbackSubmissionInput } from '@/validators/feedback';
 import { RATING_CATEGORIES } from '@/lib/constants/ratings';
 import { useFingerprint } from '@/hooks/useFingerprint';
+import { Button, Logo, Textarea } from '@/components/ui';
 import RatingCategory from './RatingCategory';
 import type { User } from '@/types/user';
 
@@ -178,24 +179,26 @@ export default function FeedbackForm({
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <div className="max-w-4xl mx-auto px-4 py-6 md:p-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
         {/* Header */}
-        <div className="bg-card rounded-lg shadow-lg p-8 border">
-          <h1 className="text-3xl font-bold mb-2">
+        <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 border">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
             Give Feedback to {targetUser.fullName}
           </h1>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 text-sm md:text-base">
             Your feedback is anonymous and helps {targetUser.fullName.split(' ')[0]} grow professionally.
           </p>
 
           {/* Review Period Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm">
-            <span className="text-2xl">{reviewPeriod.theme.primaryEmoji}</span>
-            <div>
+          <div className="inline-flex items-center gap-2 px-3 py-2 md:px-4 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+            {/* <span className="text-xl md:text-2xl">{reviewPeriod.theme.primaryEmoji}</span> */}
+            <Logo />
+            <div className="flex flex-col md:block">
               <span className="font-semibold text-primary">{reviewPeriod.name}</span>
-              <span className="text-muted-foreground ml-2">
-                • {new Date(reviewPeriod.startDate).toLocaleDateString()} - {new Date(reviewPeriod.endDate).toLocaleDateString()}
+              <span className="text-muted-foreground md:ml-2 text-xs md:text-sm">
+                <span className="hidden md:inline">• </span>
+                {new Date(reviewPeriod.startDate).toLocaleDateString()} - {new Date(reviewPeriod.endDate).toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -209,7 +212,7 @@ export default function FeedbackForm({
 
         {/* Rating Categories */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Rate Performance</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Rate Performance</h2>
           {RATING_CATEGORIES.map((category) => (
             <Controller
               key={category.key}
@@ -231,57 +234,39 @@ export default function FeedbackForm({
         </div>
 
         {/* Strengths */}
-        <div className="bg-card rounded-lg shadow-lg p-8 border space-y-4">
-          <h2 className="text-2xl font-bold">What are their strengths?</h2>
+        <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 border space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold">What are their strengths?</h2>
           <p className="text-sm text-muted-foreground">
             Share specific examples of what they do well (minimum 20 characters)
           </p>
-          <textarea
+          <Textarea
             {...register('strengths')}
             disabled={isSubmitting}
             rows={4}
             maxLength={500}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.strengths ? 'border-destructive' : 'border-input'
-              }`}
+            fullWidth
+            error={errors.strengths?.message}
             placeholder="Example: Great at explaining complex concepts, always willing to help team members..."
+            helperText={`${watchedStrengths?.length || 0}/500`}
           />
-          <div className="flex justify-between items-center">
-            <div>
-              {errors.strengths && (
-                <p className="text-sm text-destructive">{errors.strengths.message}</p>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {watchedStrengths?.length || 0}/500
-            </p>
-          </div>
         </div>
 
         {/* Improvements */}
-        <div className="bg-card rounded-lg shadow-lg p-8 border space-y-4">
-          <h2 className="text-2xl font-bold">What could they improve?</h2>
+        <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 border space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold">What could they improve?</h2>
           <p className="text-sm text-muted-foreground">
             Provide constructive feedback for growth (minimum 20 characters)
           </p>
-          <textarea
+          <Textarea
             {...register('improvements')}
             disabled={isSubmitting}
             rows={4}
             maxLength={500}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.improvements ? 'border-destructive' : 'border-input'
-              }`}
+            fullWidth
+            error={errors.improvements?.message}
             placeholder="Example: Could improve time management, would benefit from more documentation..."
+            helperText={`${watchedImprovements?.length || 0}/500`}
           />
-          <div className="flex justify-between items-center">
-            <div>
-              {errors.improvements && (
-                <p className="text-sm text-destructive">{errors.improvements.message}</p>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {watchedImprovements?.length || 0}/500
-            </p>
-          </div>
         </div>
 
         {/* Honeypot (hidden field for spam prevention) */}
@@ -294,7 +279,7 @@ export default function FeedbackForm({
         />
 
         {/* Confirmation */}
-        <div className="bg-card rounded-lg shadow-lg p-8 border space-y-4">
+        <div className="bg-card rounded-lg shadow-lg p-6 md:p-8 border space-y-4">
           <div className="flex items-start gap-3">
             <input
               type="checkbox"
@@ -314,13 +299,16 @@ export default function FeedbackForm({
 
         {/* Submit Button */}
         <div className="flex gap-4">
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-primary text-primary-foreground py-4 rounded-lg font-medium text-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 py-6 text-lg"
+            variant="primary"
+            size="lg"
+            isLoading={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Anonymous Feedback'}
-          </button>
+          </Button>
         </div>
 
         {/* Privacy Notice */}
@@ -328,7 +316,7 @@ export default function FeedbackForm({
           <p className="font-medium mb-2">🔒 Your Privacy is Protected</p>
           <ul className="space-y-1 ml-4">
             <li>• Your feedback is completely anonymous</li>
-            <li>• We don't store your name, email, or any identifying information</li>
+            <li>• We don&rsquo;t store your name, email, or any identifying information</li>
             <li>• Advanced spam prevention ensures one submission per person</li>
           </ul>
         </div>

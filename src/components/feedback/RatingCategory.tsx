@@ -1,6 +1,7 @@
 'use client';
 
 import RatingInput from './RatingInput';
+import { Textarea } from '@/components/ui';
 
 /**
  * Rating Category Component
@@ -35,13 +36,13 @@ export default function RatingCategory({
   const maxCommentLength = 200;
 
   return (
-    <div className="space-y-4 p-6 bg-card rounded-lg border">
+    <div className="space-y-4 p-4 md:p-6 bg-card rounded-lg border">
       {/* Category Header */}
       <div className="flex items-start gap-3">
-        <span className="text-3xl">{category.emoji}</span>
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg">{category.label}</h3>
-          <p className="text-sm text-muted-foreground">{category.description}</p>
+        <span className="text-2xl md:text-3xl flex-shrink-0">{category.emoji}</span>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base md:text-lg">{category.label}</h3>
+          <p className="text-xs md:text-sm text-muted-foreground">{category.description}</p>
         </div>
       </div>
 
@@ -68,19 +69,17 @@ export default function RatingCategory({
           Additional comments{' '}
           <span className="text-muted-foreground font-normal">(Optional)</span>
         </label>
-        <textarea
+        <Textarea
           id={`${category.key}-comment`}
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
           disabled={disabled}
           maxLength={maxCommentLength}
           rows={2}
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          fullWidth
           placeholder="Any specific examples or suggestions?"
+          helperText={`${comment.length}/${maxCommentLength}`}
         />
-        <div className="mt-1 text-xs text-muted-foreground text-right">
-          {comment.length}/{maxCommentLength}
-        </div>
       </div>
     </div>
   );

@@ -69,6 +69,7 @@ export async function GET(request: NextRequest) {
             improvements: feedback.improvements,
             mulaRating: feedback.mulaRating,
             employeeReaction: feedback.employeeReaction,
+            visibility: feedback.visibility,
             reviewPeriod: feedback.reviewPeriod
                 ? {
                     name: (feedback.reviewPeriod as any).name,

@@ -41,7 +41,7 @@ export default async function LoginPage() {
               Welcome to MulaBoard
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed font-light">
-              "The only thing worse than being reviewed is not being reviewed at all."
+              &quot;The only thing worse than being reviewed is not being reviewed at all.&quot;
             </p>
           </div>
         </div>
